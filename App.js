@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 
   bodyContainer: {
     flex: 9,
-    backgroundColor: "#FF0000"
+    backgroundColor: "#FFFFFF"
   },
 
   bottomContainer: {
