@@ -34,6 +34,6 @@ const styles = StyleSheet.create({
 
   bottomContainer: {
     flex: 1,
-    backgroundColor: "#FFFFFF"
+    backgroundColor: "#FF00FF"
   }
 });
