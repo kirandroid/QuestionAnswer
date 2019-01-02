@@ -7,7 +7,7 @@ export default class App extends Component {
       <View style={styles.container}>
         <View style={styles.navContainer} />
         <View style={styles.bodyContainer} >
-        <Text>sample Text input for changes</Text></View>
+        <Text>New Text sample hai ta </Text></View>
         <View style={styles.bottomContainer} />
       </View>
     );
@@ -34,6 +34,6 @@ const styles = StyleSheet.create({
 
   bottomContainer: {
     flex: 1,
-    backgroundColor: "#FF00FF"
+    backgroundColor: "#FFFFFF"
   }
 });
