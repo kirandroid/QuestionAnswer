@@ -6,7 +6,8 @@ export default class App extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.navContainer} />
-        <View style={styles.bodyContainer} />
+        <View style={styles.bodyContainer} >
+        <Text>sample Text input for changes</Text></View>
         <View style={styles.bottomContainer} />
       </View>
     );
