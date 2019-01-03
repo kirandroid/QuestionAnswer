@@ -7,7 +7,7 @@ export default class App extends Component {
       <View style={styles.container}>
         <View style={styles.navContainer} />
         <View style={styles.bodyContainer} >
-        <Text>New Text sample hai ta </Text></View>
+        <Text>New Text</Text></View>
         <View style={styles.bottomContainer} />
       </View>
     );
