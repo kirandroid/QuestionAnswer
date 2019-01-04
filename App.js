@@ -27,6 +27,7 @@ export default class App extends Component {
           source={require('./Resource/Design/welele1.png')}/>
           </View>      
         </View>
+      </View>
     );
   }
 }
