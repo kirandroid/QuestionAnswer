@@ -13,7 +13,6 @@ export default class App extends Component {
           source={require('./Resource/Design/welcome.png')}/>
         </View>
         <View style={styles.bodyContainer} >
-<<<<<<< HEAD
         <Text style={styles.text}>WELCOME</Text>
         <TouchableOpacity onPress = {showAlert} style = {styles.button}>
          <Text style={styles.txtcolor}>Get Started</Text>
@@ -28,11 +27,6 @@ export default class App extends Component {
           source={require('./Resource/Design/welele1.png')}/>
           </View>      
         </View>
-=======
-        <Text>Sample TExt</Text></View>
-        <View style={styles.bottomContainer} />
->>>>>>> f6c3dccc5d38483c6c01d4ed3411f9c525c504f3
-      </View>
     );
   }
 }
