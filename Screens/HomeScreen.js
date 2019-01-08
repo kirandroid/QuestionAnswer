@@ -1,36 +1,42 @@
 import React, { Component } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Provider as PaperProvider, Appbar, TextInput, TouchableRipple, Text } from 'react-native-paper';
+import UserAvatar from 'react-native-user-avatar';
 export default class HomeScreen extends Component {
-  state = {
-    text: ''
-  };
+
   render() {
     return (
       <PaperProvider>
-        <Appbar.Header>
+        <Appbar.Header
+          style={{ backgroundColor: "red" }}>
           <Appbar.Content
-            title="Title"
+            titleStyle={{ alignSelf: 'center' }}
+            title="Activity Feed"
           />
         </Appbar.Header>
-        <TextInput
-          label='Email'
-          mode='outlined'
-          value={this.state.text}
-          onChangeText={text => this.setState({ text })}
-        />
-        <TextInput
-          label='k'
-          mode='flat | outlined'
-          value={this.state.text}
-          onChangeText={text => this.setState({ text })}
-        />
-        <TouchableRipple
-          onPress={() => console.log('Pressed')}
-          rippleColor="rgba(0, 0, 8, .32)"
-        >
-          <Text>Press me</Text>
-        </TouchableRipple>
+
+        <View style={styles.postCard}>
+          <View style={styles.cardBody}>
+            <View style={styles.cardBodyHeader}>
+              <View style={styles.cardBodyHeaderAvatar}>
+                <UserAvatar name="Kiran Pradhan" size={70} />
+              </View>
+              <View style={styles.cardBodyHeaderPoster}>
+                <View style={styles.cardBodyHeaderPosterName}>
+                  <Text style={{ fontWeight: "bold", fontSize: 20 }}>Kiran Pradhan</Text>
+                </View>
+                <View style={styles.cardBodyHeaderPosterCollege}>
+                  <Text>University of Bedfordshire</Text>
+                </View>
+                <View style={styles.cardBodyHeaderPosterTime}>
+                  <Text style={{ color: "grey" }}>23m ago</Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.cardBodyContent}></View>
+          </View>
+          <View style={styles.cardFooter}></View>
+        </View>
       </PaperProvider>
     );
   }
@@ -40,5 +46,57 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column"
-  }
+  },
+
+  postCard: {
+    elevation: 3,
+    backgroundColor: "#FFFFFF",
+    flex: 1,
+    margin: 10,
+    borderRadius: 3
+  },
+
+  cardBody: {
+    flex: 9
+  },
+
+  cardBodyHeader: {
+    flex: 3,
+    flexDirection: "row"
+  },
+
+  cardBodyHeaderAvatar: {
+    flex: 3,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  cardBodyHeaderPoster: {
+    flex: 7
+  },
+
+  cardBodyHeaderPosterName: {
+    flex: 2,
+    justifyContent: "center"
+  },
+
+  cardBodyHeaderPosterCollege: {
+    flex: 1
+  },
+
+  cardBodyHeaderPosterTime: {
+    flex: 1
+  },
+
+  cardBodyContent: {
+    flex: 7,
+    backgroundColor: "blue"
+  },
+
+  cardFooter: {
+    flex: 1,
+    backgroundColor: "yellow"
+  },
+
+
 });

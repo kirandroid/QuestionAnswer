@@ -1,10 +1,10 @@
-/** @format */
-
 import { AppRegistry } from "react-native";
-import App from "./App";
+import React, { Component } from 'react';
+import Routes from './app/routes'
 import { name as appName } from "./app.json";
-import ProfileScreen from "./Screens/ProfileScreen";
-import HomeScreen from "./Screens/HomeScreen";
 
-// AppRegistry.registerComponent(appName, () => App);
-AppRegistry.registerComponent(appName, () => HomeScreen);
+const App = () => (
+    <Routes />
+)
+
+AppRegistry.registerComponent(appName, () => App);
