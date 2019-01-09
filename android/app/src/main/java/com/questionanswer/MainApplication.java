@@ -3,7 +3,13 @@ package com.questionanswer;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import io.invertase.firebase.perf.RNFirebasePerformancePackage;
+import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
+import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
+import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -25,8 +31,14 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFirebasePackage(),
             new RNGestureHandlerPackage(),
-            new VectorIconsPackage()
+            new VectorIconsPackage(),
+            new RNFirebaseAnalyticsPackage(),
+            new RNFirebasePerformancePackage(),
+            new RNFirebaseCrashlyticsPackage(),
+            new RNFirebaseFirestorePackage(),
+            new RNFirebaseAuthPackage()
       );
     }
 

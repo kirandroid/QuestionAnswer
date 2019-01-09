@@ -9,6 +9,7 @@
   "dependencies": {
     "react": "16.6.3",
     "react-native": "0.57.8",
+    "react-native-firebase": "^5.2.0",
     "react-native-gesture-handler": "^1.0.12",
     "react-native-material-bottom-navigation": "^1.0.2",
     "react-native-paper": "^2.4.0",
