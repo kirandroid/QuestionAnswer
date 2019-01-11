@@ -19,9 +19,11 @@
     "react-navigation-material-bottom-tabs": "^1.0.0"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "babel-jest": "23.6.0",
     "jest": "23.6.0",
     "metro-react-native-babel-preset": "0.51.1",
+    "prettier-eslint": "^8.8.2",
     "react-test-renderer": "16.6.3"
   },
   "jest": {
