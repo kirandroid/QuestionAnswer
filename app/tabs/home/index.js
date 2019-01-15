@@ -5,55 +5,88 @@ import {
   StyleSheet,
   StatusBar,
   FlatList,
-  Image,
-  Dimensions
+  TextInput,
+  Dimensions,
+  TouchableOpacity
 } from "react-native";
 import { Provider as PaperProvider, Appbar } from "react-native-paper";
 import UserAvatar from "react-native-user-avatar";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/Ionicons";
+import FastImage from "react-native-fast-image";
+import firebase from "react-native-firebase";
+import Moment from "react-moment";
+import "moment-timezone";
 
 export default class HomeScreen extends React.Component {
-  state = {
-    posts: [
-      {
-        UID: "askjdlj32weqdks",
-        name: "fffd Maw",
-        college: "University of BedfordShire",
-        time: "25min ago",
-        postText: "Some nice things",
-        image:
-          "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/cat-quotes-1543599392.jpg",
-        likes: "34",
-        dislikes: "12",
-        comments: "12"
-      },
-      {
-        UID: "asdascxjhjl",
-        name: "Gira Maw",
-        college: "University of kentucky",
-        time: "45min ago",
-        postText: "Some bad things",
-        image:
-          "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/cat-quotes-1543599392.jpg",
-        likes: "43",
-        dislikes: "12",
-        comments: "55"
-      },
-      {
-        UID: "sdfsdf",
-        name: "Gira Maw",
-        college: "University of kentucky",
-        time: "45min ago",
-        postText: "Some bad things",
-        image:
-          "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/cat-quotes-1543599392.jpg",
-        likes: "43",
-        dislikes: "12",
-        comments: "55"
-      }
-    ]
+  constructor() {
+    super();
+    this.ref = firebase
+      .firestore()
+      .collection("post")
+      .orderBy("postDate", "desc");
+    this.refUser = firebase.firestore().collection("user");
+    this.refQuick = firebase.firestore().collection("post");
+    this.unsubscribe = null;
+
+    this.state = {
+      loading: true,
+      post: [],
+      currentUser: null,
+      postInput: ""
+    };
+  }
+
+  updatePostInput(value) {
+    this.setState({
+      postInput: value
+    });
+  }
+
+  componentDidMount() {
+    this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
+    const { currentUser } = firebase.auth();
+    this.setState({ currentUser });
+  }
+
+  addPost() {
+    this.refQuick.add({
+      postText: this.state.postInput,
+      hasImage: false,
+      active: true,
+      postImage: "",
+      postUserId: this.state.currentUser.uid,
+      postId: "jhgjgkj",
+      postDate: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    this.setState({
+      postInput: ""
+    });
+  }
+
+  onCollectionUpdate = querySnapshot => {
+    const post = [];
+
+    querySnapshot.forEach(doc => {
+      const { postText, postImage, postId, postDate, postUserId } = doc.data();
+
+      post.push({
+        key: doc.id,
+        doc,
+        postText,
+        postImage,
+        postId,
+        postDate,
+        postUserId
+      });
+    });
+    this.setState({
+      post,
+      loading: false
+    });
   };
+
   render() {
+    const { currentUser } = this.state;
     return (
       <PaperProvider>
         <StatusBar backgroundColor="#b26a00" barStyle="light-content" />
@@ -65,70 +98,133 @@ export default class HomeScreen extends React.Component {
         </Appbar.Header>
 
         <View style={styles.container}>
-          <FlatList
-            data={this.state.posts}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View style={styles.postCard}>
-                <View style={styles.postBody}>
+          {this.state.loading ? null : (
+            <FlatList
+              data={this.state.post}
+              ListEmptyComponent={
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <Text>Sorry No result this time!</Text>
+                </View>
+              }
+              ListHeaderComponent={
+                <View style={styles.addPostAreaCard}>
                   <View style={styles.postHeader}>
-                    <View style={styles.postAvatar}>
-                      <UserAvatar name={item.name} size={50} />
+                    <View style={styles.addPostUserAvatar}>
+                      <UserAvatar name="Kiran Pradhan" size={40} />
                     </View>
-                    <View style={styles.postUserDetail}>
-                      <View style={styles.postUserName}>
-                        <Text style={{ fontSize: 18 }}>{item.name}</Text>
-                      </View>
-                      <View style={styles.postUserCollege}>
-                        <Text style={{ fontSize: 13, color: "grey" }}>
-                          {item.college}
-                        </Text>
-                      </View>
-                      <View style={styles.postUserPostTime}>
-                        <Text style={{ fontSize: 10, color: "grey" }}>
-                          {item.time}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.postContent}>
-                    <View style={styles.postStatus}>
-                      <Text>{item.postText}</Text>
-                    </View>
-                    <View style={styles.postImage}>
-                      <Image
-                        style={{ height: 200, width: Dimensions.width }}
-                        source={{
-                          uri: item.image
-                        }}
+                    <View style={styles.addPostUserStatus}>
+                      <TextInput
+                        style={{ height: 80, textAlign: "left" }}
+                        value={this.state.postInput}
+                        onChangeText={text => this.updatePostInput(text)}
+                        underlineColorAndroid="transparent"
+                        placeholder={"What is you're problem man!"}
+                        placeholderTextColor={"#9E9E9E"}
+                        numberOfLines={10}
+                        multiline={true}
                       />
                     </View>
+                    <View style={styles.addPostImage}>
+                      <TouchableOpacity onPress={() => this.addPost()}>
+                        <Icon name="md-send" color="grey" size={22} />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
-                <View style={styles.postFooter}>
-                  <View style={styles.postActivityDetail}>
-                    <Text>{item.likes}</Text>
-                    <Icon name="arrow-up" color="grey" size={18} />
+              }
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <View style={styles.postCard}>
+                  <View style={styles.postBody}>
+                    <View style={styles.postHeader}>
+                      <View style={styles.postAvatar}>
+                        <UserAvatar name="Kiran Pradhan" size={50} />
+                      </View>
+                      <View style={styles.postUserDetail}>
+                        <View style={styles.postUserName}>
+                          <Text style={{ fontSize: 18 }}>"Kiran Pradhan"</Text>
+                        </View>
+                        <View style={styles.postUserCollege}>
+                          <Text style={{ fontSize: 13, color: "grey" }}>
+                            University
+                          </Text>
+                        </View>
+                        <View style={styles.postUserPostTime}>
+                          <Text style={{ fontSize: 10, color: "grey" }}>
+                            <Moment element={Text} fromNow>
+                              {item.postDate}
+                            </Moment>
+                          </Text>
+                        </View>
+                      </View>
+                      {item.postUserId == currentUser.uid ? (
+                        <View style={styles.postDelete}>
+                          <Icon
+                            name="md-trash"
+                            color="grey"
+                            size={18}
+                            onPress={() =>
+                              firebase
+                                .firestore()
+                                .collection("post")
+                                .doc(item.key)
+                                .delete()
+                            }
+                          />
+                        </View>
+                      ) : null}
+                    </View>
+                    <View style={styles.postContent}>
+                      <View style={styles.postStatus}>
+                        <Text>{item.postText}</Text>
+                      </View>
+                      {item.postImage == "" ? null : (
+                        <View style={styles.postImage}>
+                          <FastImage
+                            style={{ height: 200, width: Dimensions.width }}
+                            source={{
+                              uri: item.postImage,
+                              priority: FastImage.priority.high
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                          />
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                  <View style={styles.postFooter}>
+                    <View style={styles.postActivityDetailLikeDislike}>
+                      <Text>23 Likes</Text>
 
-                    <Text>{item.dislikes}</Text>
-                    <Icon name="arrow-down" color="grey" size={18} />
+                      <Text>23 Dislikes</Text>
+                    </View>
 
-                    <Text>{item.comments}</Text>
-                    <Icon name="comment-outline" color="grey" size={18} />
+                    <View style={styles.postActivityDetailComment}>
+                      <Text>23 Comment</Text>
+                    </View>
                   </View>
 
-                  <View style={styles.postActivityControl}>
-                    <Icon name="arrow-up" color="grey" size={18} />
+                  <View style={styles.postControl}>
+                    <View style={styles.postActivityControlLikeDislike}>
+                      <Icon name="md-thumb-up" color="grey" size={18} />
 
-                    <Icon name="arrow-down" color="grey" size={18} />
-
-                    <Icon name="comment-outline" color="grey" size={18} />
+                      <Icon name="md-thumb-down" color="grey" size={18} />
+                    </View>
+                    <View style={styles.postActivityControlComment}>
+                      <Icon name="md-chatbubbles" color="grey" size={18} />
+                    </View>
                   </View>
                 </View>
-              </View>
-            )}
-            keyExtractor={item => item.UID}
-          />
+              )}
+              keyExtractor={item => item.key}
+            />
+          )}
         </View>
       </PaperProvider>
     );
@@ -139,6 +235,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
+
+  addPostAreaCard: {
+    elevation: 3,
+    backgroundColor: "#FFFFFF"
+  },
+
   postCard: {
     elevation: 3,
     backgroundColor: "#FFFFFF",
@@ -163,7 +265,13 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   postUserDetail: {
-    flex: 8
+    flex: 7
+  },
+
+  postDelete: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   },
 
   postUserName: {
@@ -197,17 +305,53 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
 
-  postActivityDetail: {
+  postActivityDetailLikeDislike: {
+    flex: 6,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    margin: 5
+  },
+
+  postActivityDetailComment: {
     flex: 4,
     flexDirection: "row",
     justifyContent: "flex-start",
     margin: 5
   },
 
-  postActivityControl: {
+  postControl: {
+    flex: 1,
+    flexDirection: "row"
+  },
+  postActivityControlLikeDislike: {
     flex: 6,
     flexDirection: "row",
     justifyContent: "flex-end",
     margin: 5
+  },
+
+  postActivityControlComment: {
+    flex: 4,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    margin: 5
+  },
+
+  addPostUserAvatar: {
+    flex: 2,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  addPostUserStatus: {
+    flex: 7,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  addPostImage: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
