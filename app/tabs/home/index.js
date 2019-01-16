@@ -7,7 +7,8 @@ import {
   FlatList,
   TextInput,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage
 } from "react-native";
 import { Provider as PaperProvider, Appbar } from "react-native-paper";
 import UserAvatar from "react-native-user-avatar";
@@ -24,7 +25,7 @@ export default class HomeScreen extends React.Component {
       .firestore()
       .collection("post")
       .orderBy("postDate", "desc");
-    this.refUser = firebase.firestore().collection("user");
+    this.refUser = firebase.firestore().collection("post");
     this.refQuick = firebase.firestore().collection("post");
     this.unsubscribe = null;
 
@@ -32,7 +33,10 @@ export default class HomeScreen extends React.Component {
       loading: true,
       post: [],
       currentUser: null,
-      postInput: ""
+      postInput: "",
+      fullName: "xc",
+      hasProfilePic: null,
+      profilePic: ""
     };
   }
 
@@ -41,11 +45,106 @@ export default class HomeScreen extends React.Component {
       postInput: value
     });
   }
+  test() {
+    console.log(this.state.currentUser.uid);
+    const markers = [];
+    firebase
+      .firestore()
+      .collection("user")
+      .doc(this.state.currentUser.uid)
+      .get()
+      .then(doc => {
+        // markers.push(doc.data());
+        const {
+          firstName,
+          lastName,
+          email,
+          coverImage,
+          hasCover,
+          hasProfilePic,
+          profilePic,
+          username
+        } = doc.data();
 
+        markers.push({
+          lastName,
+          firstName,
+          email,
+          coverImage,
+          hasCover,
+          hasProfilePic,
+          profilePic,
+          username
+        });
+      })
+      .then(() => {
+        console.log(markers);
+        console.log(markers[0].firstName);
+      });
+  }
   componentDidMount() {
     this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
+    console.log("user: " + currentUser.uid);
+    const userData = [];
+    firebase
+      .firestore()
+      .collection("user")
+      .doc(currentUser.uid)
+      .get()
+      .then(doc => {
+        // markers.push(doc.data());
+        const {
+          firstName,
+          lastName,
+          email,
+          coverImage,
+          hasCover,
+          hasProfilePic,
+          profilePic,
+          username
+        } = doc.data();
+
+        userData.push({
+          lastName,
+          firstName,
+          email,
+          coverImage,
+          hasCover,
+          hasProfilePic,
+          profilePic,
+          username
+        });
+      })
+      .then(() => {
+        var obj = {
+          fullName: userData[0].firstName + " " + userData[0].lastName,
+          email: userData[0].email,
+          coverImage: userData[0].coverImage,
+          hasCover: userData[0].hasCover,
+          hasProfilePic: userData[0].hasProfilePic,
+          profilePic: userData[0].profilePic,
+          username: userData[0].username
+        };
+        AsyncStorage.setItem("user", JSON.stringify(obj));
+        console.log("In Save");
+      })
+      .then(async () => {
+        console.log("In Display");
+
+        try {
+          let user = await AsyncStorage.getItem("user");
+          let parsed = JSON.parse(user);
+          this.setState({
+            fullName: parsed.fullName,
+            hasProfilePic: parsed.hasProfilePic,
+            profilePic: parsed.profilePic
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      });
   }
 
   addPost() {
@@ -67,7 +166,17 @@ export default class HomeScreen extends React.Component {
     const post = [];
 
     querySnapshot.forEach(doc => {
-      const { postText, postImage, postId, postDate, postUserId } = doc.data();
+      const {
+        postText,
+        postImage,
+        postId,
+        postDate,
+        postUserId,
+        fullName,
+        hasProfilePic,
+        profilePic,
+        username
+      } = doc.data();
 
       post.push({
         key: doc.id,
@@ -76,7 +185,11 @@ export default class HomeScreen extends React.Component {
         postImage,
         postId,
         postDate,
-        postUserId
+        postUserId,
+        fullName,
+        hasProfilePic,
+        profilePic,
+        username
       });
     });
     this.setState({
@@ -116,7 +229,9 @@ export default class HomeScreen extends React.Component {
                 <View style={styles.addPostAreaCard}>
                   <View style={styles.postHeader}>
                     <View style={styles.addPostUserAvatar}>
-                      <UserAvatar name="Kiran Pradhan" size={40} />
+                      <TouchableOpacity>
+                        <UserAvatar name={this.state.fullName} size={40} />
+                      </TouchableOpacity>
                     </View>
                     <View style={styles.addPostUserStatus}>
                       <TextInput
@@ -144,16 +259,11 @@ export default class HomeScreen extends React.Component {
                   <View style={styles.postBody}>
                     <View style={styles.postHeader}>
                       <View style={styles.postAvatar}>
-                        <UserAvatar name="Kiran Pradhan" size={50} />
+                        <UserAvatar name={item.fullName} size={50} />
                       </View>
                       <View style={styles.postUserDetail}>
                         <View style={styles.postUserName}>
-                          <Text style={{ fontSize: 18 }}>"Kiran Pradhan"</Text>
-                        </View>
-                        <View style={styles.postUserCollege}>
-                          <Text style={{ fontSize: 13, color: "grey" }}>
-                            University
-                          </Text>
+                          <Text style={{ fontSize: 18 }}>{item.fullName}</Text>
                         </View>
                         <View style={styles.postUserPostTime}>
                           <Text style={{ fontSize: 10, color: "grey" }}>
@@ -165,10 +275,7 @@ export default class HomeScreen extends React.Component {
                       </View>
                       {item.postUserId == currentUser.uid ? (
                         <View style={styles.postDelete}>
-                          <Icon
-                            name="md-trash"
-                            color="grey"
-                            size={18}
+                          <TouchableOpacity
                             onPress={() =>
                               firebase
                                 .firestore()
@@ -176,7 +283,9 @@ export default class HomeScreen extends React.Component {
                                 .doc(item.key)
                                 .delete()
                             }
-                          />
+                          >
+                            <Icon name="md-trash" color="grey" size={18} />
+                          </TouchableOpacity>
                         </View>
                       ) : null}
                     </View>
@@ -212,12 +321,12 @@ export default class HomeScreen extends React.Component {
 
                   <View style={styles.postControl}>
                     <View style={styles.postActivityControlLikeDislike}>
-                      <Icon name="md-thumb-up" color="grey" size={18} />
+                      <Icon name="md-thumbs-up" color="grey" size={25} />
 
-                      <Icon name="md-thumb-down" color="grey" size={18} />
+                      <Icon name="md-thumbs-down" color="grey" size={25} />
                     </View>
                     <View style={styles.postActivityControlComment}>
-                      <Icon name="md-chatbubbles" color="grey" size={18} />
+                      <Icon name="md-chatbubbles" color="grey" size={25} />
                     </View>
                   </View>
                 </View>
@@ -308,14 +417,14 @@ const styles = StyleSheet.create({
   postActivityDetailLikeDislike: {
     flex: 6,
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-evenly",
     margin: 5
   },
 
   postActivityDetailComment: {
     flex: 4,
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     margin: 5
   },
 
@@ -326,14 +435,14 @@ const styles = StyleSheet.create({
   postActivityControlLikeDislike: {
     flex: 6,
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-around",
     margin: 5
   },
 
   postActivityControlComment: {
     flex: 4,
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "center",
     margin: 5
   },
 

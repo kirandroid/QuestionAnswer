@@ -1,5 +1,12 @@
 import React from "react";
-import { Text, View, StyleSheet, StatusBar, Dimensions } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  StatusBar,
+  Dimensions,
+  Button
+} from "react-native";
 import { Provider as PaperProvider, Appbar } from "react-native-paper";
 import firebase from "react-native-firebase";
 import FastImage from "react-native-fast-image";
@@ -11,6 +18,15 @@ export default class ProfileScreen extends React.Component {
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
   }
+
+  deleteUserId = async () => {
+    try {
+      await AsyncStorage.removeItem("user");
+    } catch (error) {
+      // Error retrieving data
+      console.log(error.message);
+    }
+  };
 
   // <Text>Hello {currentUser && currentUser.email}</Text>
   // <Button title="Logout" onPress={() => firebase.auth().signOut()} />
@@ -39,7 +55,21 @@ export default class ProfileScreen extends React.Component {
                 resizeMode={FastImage.resizeMode.cover}
               />
             </View>
-            <View style={styles.profileDetail} />
+            <View style={styles.profileDetail}>
+              <Button
+                title="Logout"
+                onPress={() =>
+                  firebase
+                    .auth()
+                    .signOut()
+                    .then(() => {
+                      this.deleteUserId;
+                    })
+                }
+              />
+
+              <Text>{currentUser && currentUser.email}</Text>
+            </View>
           </View>
           <View style={styles.profilePost} />
         </View>

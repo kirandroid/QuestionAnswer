@@ -12,6 +12,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import io.invertase.firebase.perf.RNFirebasePerformancePackage;
 import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
 import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
+import io.invertase.firebase.functions.RNFirebaseFunctionsPackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import io.invertase.firebase.database.RNFirebaseDatabasePackage;
 import io.invertase.firebase.storage.RNFirebaseStoragePackage;
@@ -48,7 +49,8 @@ public class MainApplication extends Application implements ReactApplication {
             new RNFirebaseFirestorePackage(),
             new RNFirebaseAuthPackage(),
             new RNFirebaseDatabasePackage(),
-            new RNFirebaseStoragePackage()
+            new RNFirebaseStoragePackage(),
+            new RNFirebaseFunctionsPackage()
       );
     }
 

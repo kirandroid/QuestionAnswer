@@ -6,7 +6,9 @@ import {
   StatusBar,
   Image,
   TextInput,
-  Button
+  Button,
+  TouchableOpacity,
+  AsyncStorage
 } from "react-native";
 import { Provider as PaperProvider, Appbar } from "react-native-paper";
 import UserAvatar from "react-native-user-avatar";
@@ -15,7 +17,7 @@ import firebase from "react-native-firebase";
 import ImagePicker from "react-native-image-picker";
 
 const options = {
-  title: "my pic app",
+  title: "Choose an Image",
   takePhotoButtonTitle: "Take photo with your camera",
   chooseFromLibraryButtonTitle: "Choose photo from library"
 };
@@ -27,17 +29,46 @@ export default class AddScreen extends React.Component {
     this.postImageRef = firebase.storage().ref();
     this.state = {
       postInput: "",
-      currentUser: null,
-      avatarSource: null,
-      pic: null,
-      picName: null,
-      imageUrl: null
+      currentUser: "",
+      avatarSource: "",
+      pic: "",
+      picName: "",
+      picType: "",
+      imageUrl: "",
+      fullName: "xc",
+      email: "",
+      coverImage: "",
+      hasCover: null,
+      hasProfilePic: null,
+      profilePic: "",
+      username: ""
     };
   }
+
+  asy = async () => {
+    console.log("In Display");
+
+    try {
+      let user = await AsyncStorage.getItem("user");
+      let parsed = JSON.parse(user);
+      this.setState({
+        fullName: parsed.fullName,
+        email: parsed.email,
+        coverImage: parsed.coverImage,
+        hasCover: parsed.hasCover,
+        hasProfilePic: parsed.hasProfilePic,
+        profilePic: parsed.profilePic,
+        username: parsed.username
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   componentDidMount() {
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
+    this.asy();
   }
 
   updatePostInput(value) {
@@ -47,42 +78,86 @@ export default class AddScreen extends React.Component {
   }
 
   addPost() {
-    const uploadImage = (path, mime = "application/octet-stream") => {
-      console.log("1");
-      return new Promise((resolve, reject) => {
-        console.log("2");
-        const imageRef = firebase
-          .storage()
-          .ref("post/" + this.state.picName)
-          .child(this.state.pic);
+    // var uploadTask = firebase
+    //   .storage()
+    //   .ref("post/" + this.state.picName)
+    //   .putFile(this.state.pic);
 
-        return imageRef
-          .put(path, { contentType: mime })
-          .then(() => {
-            console.log("3");
-            return imageRef.getDownloadURL();
-          })
+    // uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, snapshot => {
+    //   var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //   console.log("Upload is " + progress + "% done");
+    //   switch (snapshot.state) {
+    //     case firebase.storage.TaskState.PAUSED:
+    //       console.log("Upload is paused");
+    //       break;
+    //     case firebase.storage.TaskState.RUNNING:
+    //       console.log("Upload is running");
+    //       break;
+    //     case firebase.storage.TaskState.SUCCESS:
+    //       console.log("Success");
+    //       firebase
+    //         .storage()
+    //         .refFromURL(
+    //           "gs://questionanswer-3cd3f.appspot.com/post/" + this.state.picName
+    //         )
+    //         .getDownloadURL()
+    //         .then(url => {
+    //           console.log(url);
+    //           this.setState({ imageUrl: url });
+    //         })
+    //         .then(() => {
+    //           this.ref.add({
+    //             postText: this.state.postInput,
+    //             hasImage: true,
+    //             active: true,
+    //             postImage: this.state.imageUrl,
+    //             postUserId: this.state.currentUser.uid,
+    //             postId: "jhgjgkj",
+    //             postDate: firebase.firestore.FieldValue.serverTimestamp()
+    //           });
+    //         })
+    //         .then(() => {
+    //           this.setState({
+    //             avatarSource: null,
+    //             postInput: ""
+    //           });
+    //         });
+    //       break;
+    //   }
+    // });
+
+    firebase
+      .storage()
+      .ref("post/" + this.state.picName)
+      .putFile(this.state.pic)
+      .then(() => {
+        firebase
+          .storage()
+          .refFromURL(
+            "gs://questionanswer-3cd3f.appspot.com/post/" + this.state.picName
+          )
+          .getDownloadURL()
           .then(url => {
-            console.log("4");
-            resolve(url);
+            console.log(url);
+            this.setState({ imageUrl: url });
           })
-          .catch(error => {
-            reject(error);
-            console.log("Error uploading image: ", error);
+          .then(() => {
+            this.ref.add({
+              postText: this.state.postInput,
+              hasImage: true,
+              active: true,
+              postImage: this.state.imageUrl,
+              postUserId: this.state.currentUser.uid,
+              postId: "jhgjgkj",
+              postDate: firebase.firestore.FieldValue.serverTimestamp(),
+              fullName: this.state.fullName,
+              email: this.state.email,
+              hasProfilePic: this.state.hasProfilePic,
+              profilePic: this.state.profilePic,
+              username: this.state.username
+            });
           });
       });
-    };
-    console.log(uploadImage);
-
-    this.ref.add({
-      postText: this.state.postInput,
-      hasImage: true,
-      active: true,
-      postImage: "",
-      postUserId: this.state.currentUser.uid,
-      postId: "jhgjgkj",
-      postDate: firebase.firestore.FieldValue.serverTimestamp()
-    });
   }
 
   choosePhoto() {
@@ -98,7 +173,8 @@ export default class AddScreen extends React.Component {
         this.setState({
           avatarSource: source,
           pic: response.uri,
-          picName: response.fileName
+          picName: response.fileName,
+          picType: response.type
         });
       }
     });
@@ -117,10 +193,12 @@ export default class AddScreen extends React.Component {
         <View style={styles.container}>
           <View style={styles.header}>
             <View style={styles.headerUserAvatar}>
-              <UserAvatar name="Kiran i" size={60} />
+              <TouchableOpacity onPress={this.asy}>
+                <UserAvatar name={this.state.fullName} size={60} />
+              </TouchableOpacity>
             </View>
             <View style={styles.headerUserName}>
-              <Text style={{ fontSize: 18 }}>{this.state.pic}</Text>
+              <Text style={{ fontSize: 18 }}>{this.state.fullName}</Text>
             </View>
           </View>
           <View style={styles.content}>
