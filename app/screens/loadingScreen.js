@@ -11,7 +11,7 @@ export default class loadingScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>load1ng</Text>
+        <Text>Question and Answer</Text>
         <ActivityIndicator size="large" />
       </View>
     );
