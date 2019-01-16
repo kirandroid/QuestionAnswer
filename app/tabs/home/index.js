@@ -36,7 +36,9 @@ export default class HomeScreen extends React.Component {
       postInput: "",
       fullName: "xc",
       hasProfilePic: null,
-      profilePic: ""
+      profilePic: "",
+      email: "",
+      username: ""
     };
   }
 
@@ -139,7 +141,9 @@ export default class HomeScreen extends React.Component {
           this.setState({
             fullName: parsed.fullName,
             hasProfilePic: parsed.hasProfilePic,
-            profilePic: parsed.profilePic
+            profilePic: parsed.profilePic,
+            email: parsed.email,
+            username: parsed.username
           });
         } catch (error) {
           console.log(error);
@@ -155,7 +159,12 @@ export default class HomeScreen extends React.Component {
       postImage: "",
       postUserId: this.state.currentUser.uid,
       postId: "jhgjgkj",
-      postDate: firebase.firestore.FieldValue.serverTimestamp()
+      postDate: firebase.firestore.FieldValue.serverTimestamp(),
+      fullName: this.state.fullName,
+      email: this.state.email,
+      hasProfilePic: this.state.hasProfilePic,
+      profilePic: this.state.profilePic,
+      username: this.state.username
     });
     this.setState({
       postInput: ""
@@ -230,7 +239,11 @@ export default class HomeScreen extends React.Component {
                   <View style={styles.postHeader}>
                     <View style={styles.addPostUserAvatar}>
                       <TouchableOpacity>
-                        <UserAvatar name={this.state.fullName} size={40} />
+                        <UserAvatar
+                          name={this.state.fullName}
+                          size={40}
+                          src={this.state.profilePic}
+                        />
                       </TouchableOpacity>
                     </View>
                     <View style={styles.addPostUserStatus}>
@@ -259,7 +272,11 @@ export default class HomeScreen extends React.Component {
                   <View style={styles.postBody}>
                     <View style={styles.postHeader}>
                       <View style={styles.postAvatar}>
-                        <UserAvatar name={item.fullName} size={50} />
+                        <UserAvatar
+                          name={item.fullName}
+                          size={50}
+                          src={this.state.profilePic}
+                        />
                       </View>
                       <View style={styles.postUserDetail}>
                         <View style={styles.postUserName}>
@@ -309,13 +326,13 @@ export default class HomeScreen extends React.Component {
                   </View>
                   <View style={styles.postFooter}>
                     <View style={styles.postActivityDetailLikeDislike}>
-                      <Text>23 Likes</Text>
+                      <Text>0 Likes</Text>
 
-                      <Text>23 Dislikes</Text>
+                      <Text>0 Dislikes</Text>
                     </View>
 
                     <View style={styles.postActivityDetailComment}>
-                      <Text>23 Comment</Text>
+                      <Text>0 Comment</Text>
                     </View>
                   </View>
 

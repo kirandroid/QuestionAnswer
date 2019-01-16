@@ -49,7 +49,7 @@ export default class ProfileScreen extends React.Component {
                 style={{ height: "100%", width: Dimensions.width }}
                 source={{
                   uri:
-                    "https://firebasestorage.googleapis.com/v0/b/questionanswer-3cd3f.appspot.com/o/post%2Freceived_361782224626869.jpeg?alt=media&token=362a9730-9ac9-40f6-9c63-29544aa41b61",
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQYTJwz3vNzCUITCBgEOkcKGW_GUYp4m45R_xdapaK8pSBHWLZ",
                   priority: FastImage.priority.high
                 }}
                 resizeMode={FastImage.resizeMode.cover}

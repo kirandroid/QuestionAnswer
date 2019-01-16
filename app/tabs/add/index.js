@@ -157,6 +157,12 @@ export default class AddScreen extends React.Component {
               username: this.state.username
             });
           });
+      })
+      .then(() => {
+        this.setState({
+          postInput: "",
+          avatarSource: ""
+        });
       });
   }
 
