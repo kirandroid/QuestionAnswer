@@ -1,21 +1,39 @@
 import React from "react";
-import { Text, View, StyleSheet, StatusBar } from "react-native";
+import { Text, View, StyleSheet, StatusBar, AsyncStorage } from "react-native";
 import { Provider as PaperProvider, Appbar } from "react-native-paper";
 import { GiftedChat } from "react-native-gifted-chat";
 import Backend from "./Backend";
 
 export default class ChatScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { name: false };
-  }
+  // constructor() {
+  //   super();
+  //   this.state = {
+  //   };
+  // }
   state = {
-    messages: []
+    messages: [],
+    fullName: "kc"
   };
 
   componentWillMount() {}
 
+  asy = async () => {
+    console.log("In Display");
+
+    try {
+      let user = await AsyncStorage.getItem("user");
+      let parsed = JSON.parse(user);
+      console.log(parsed.fullName);
+      this.setState({
+        fullName: parsed.fullName
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   componentDidMount() {
+    this.asy();
     Backend.loadMessages(message => {
       this.setState(previousState => {
         return {
@@ -38,14 +56,13 @@ export default class ChatScreen extends React.Component {
 
         <View style={styles.container}>
           <GiftedChat
-            inverted={false}
             messages={this.state.messages}
             onSend={message => {
               Backend.sendMessage(message);
             }}
             user={{
               _id: Backend.getUid(),
-              name: this.props.name
+              name: this.state.fullName
             }}
           />
         </View>
@@ -61,6 +78,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "gray"
+    backgroundColor: "white"
   }
 });

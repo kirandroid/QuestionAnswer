@@ -6,7 +6,9 @@ import {
   View,
   Button,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  StatusBar,
+  Dimensions
 } from "react-native";
 import firebase from "react-native-firebase";
 
@@ -17,15 +19,21 @@ export default class loginScreen extends React.Component {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate("routes"))
+      // .then(() => this.props.navigation.navigate("routes"))
       .catch(error => this.setState({ errorMessage: error.message }));
   };
   render() {
     return (
       <View style={styles.maincontainer}>
+        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
         <View style={styles.imagecontainer}>
           <Image
-            style={{ flex: 1, resizeMode: "center", width: 353, height: 210 }}
+            style={{
+              flex: 1,
+              resizeMode: "center",
+              width: Dimensions.width,
+              height: 210
+            }}
             source={require("../../Resource/Design/login.png")}
           />
         </View>
@@ -67,9 +75,9 @@ const styles = StyleSheet.create({
     width: "90%",
     height: 44,
     borderColor: "gray",
-    borderWidth: 2,
+    borderWidth: 1,
     backgroundColor: "white",
-    borderRadius: 25,
+    borderRadius: 20,
     marginTop: 8
   },
   maincontainer: {

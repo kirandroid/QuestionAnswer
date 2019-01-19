@@ -252,7 +252,7 @@ export default class HomeScreen extends React.Component {
                         value={this.state.postInput}
                         onChangeText={text => this.updatePostInput(text)}
                         underlineColorAndroid="transparent"
-                        placeholder={"What is you're problem man!"}
+                        placeholder={"What is your problem man!!!"}
                         placeholderTextColor={"#9E9E9E"}
                         numberOfLines={10}
                         multiline={true}
@@ -275,7 +275,7 @@ export default class HomeScreen extends React.Component {
                         <UserAvatar
                           name={item.fullName}
                           size={50}
-                          src={this.state.profilePic}
+                          src={item.profilePic}
                         />
                       </View>
                       <View style={styles.postUserDetail}>

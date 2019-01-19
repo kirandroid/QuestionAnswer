@@ -9,7 +9,6 @@ class Backend {
       if (user) {
         this.setUid(user.uid);
       } else {
-        console.warn("Login Nes");
       }
     });
   }
@@ -22,7 +21,10 @@ class Backend {
   }
   // retrieve the messages from the Backend
   loadMessages(callback) {
-    this.messagesRef = firebase.database().ref("messages");
+    this.messagesRef = firebase
+      .database()
+      .ref("messages")
+      .orderByChild("createdAt");
     this.messagesRef.off();
     const onReceive = data => {
       const message = data.val();

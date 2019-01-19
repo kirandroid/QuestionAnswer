@@ -7,6 +7,7 @@ import {
   Dimensions,
   Button,
   Image,
+  ScrollView,
   TouchableOpacity,
   AsyncStorage
 } from "react-native";
@@ -90,14 +91,14 @@ export default class ProfileScreen extends React.Component {
   //             <View style={styles.profileDetail}>
   //               <Button
   //                 title="Logout"
-  //                 onPress={() =>
-  //                   firebase
-  //                     .auth()
-  //                     .signOut()
-  //                     .then(() => {
-  //                       this.deleteUserId;
-  //                     })
-  //                 }
+  // onPress={() =>
+  //   firebase
+  //     .auth()
+  //     .signOut()
+  //     .then(() => {
+  //       this.deleteUserId;
+  //     })
+  // }
   //               />
 
   //               <Text>{currentUser && currentUser.email}</Text>
@@ -112,34 +113,46 @@ export default class ProfileScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.header} />
-        <FastImage
-          style={styles.avatar}
-          source={{
-            uri: this.state.profilePic,
-            priority: FastImage.priority.high
-          }}
-          resizeMode={FastImage.resizeMode.cover}
-        />
-        <View style={styles.body}>
-          <View style={styles.bodyContent}>
-            <Text style={styles.name}>{this.state.fullName}</Text>
-            <Text style={styles.info}>{this.state.email}</Text>
-            <Text style={styles.description}>
-              Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum
-              electram expetendis, omittam deseruisse consequuntur ius an,
-            </Text>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.header} />
+          <FastImage
+            style={styles.avatar}
+            source={{
+              uri: this.state.profilePic,
+              priority: FastImage.priority.high
+            }}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+          <View style={styles.body}>
+            <View style={styles.bodyContent}>
+              <Text style={styles.name}>{this.state.fullName}</Text>
+              <Text style={styles.info}>{this.state.email}</Text>
+              <Text style={styles.description}>
+                Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum
+                electram expetendis, omittam deseruisse consequuntur ius an,
+              </Text>
 
-            <TouchableOpacity style={styles.buttonContainer}>
-              <Text>View Questions</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonContainer}>
-              <Text>View Answers</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonContainer}>
+                <Text>View Questions</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={() =>
+                  firebase
+                    .auth()
+                    .signOut()
+                    .then(() => {
+                      this.deleteUserId;
+                    })
+                }
+              >
+                <Text>LogOut</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }
