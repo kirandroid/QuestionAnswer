@@ -17,8 +17,14 @@ import FastImage from "react-native-fast-image";
 import firebase from "react-native-firebase";
 import Moment from "react-moment";
 import "moment-timezone";
+import { createStackNavigator } from "react-navigation";
+import postPage from "./postPage";
 
-export default class HomeScreen extends React.Component {
+class HomeScreen extends React.Component {
+  static navigationOptions = {
+    header: null
+  };
+
   constructor() {
     super();
     this.ref = firebase
@@ -47,43 +53,7 @@ export default class HomeScreen extends React.Component {
       postInput: value
     });
   }
-  test() {
-    console.log(this.state.currentUser.uid);
-    const markers = [];
-    firebase
-      .firestore()
-      .collection("user")
-      .doc(this.state.currentUser.uid)
-      .get()
-      .then(doc => {
-        // markers.push(doc.data());
-        const {
-          firstName,
-          lastName,
-          email,
-          coverImage,
-          hasCover,
-          hasProfilePic,
-          profilePic,
-          username
-        } = doc.data();
 
-        markers.push({
-          lastName,
-          firstName,
-          email,
-          coverImage,
-          hasCover,
-          hasProfilePic,
-          profilePic,
-          username
-        });
-      })
-      .then(() => {
-        console.log(markers);
-        console.log(markers[0].firstName);
-      });
-  }
   componentDidMount() {
     this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
     const { currentUser } = firebase.auth();
@@ -164,11 +134,60 @@ export default class HomeScreen extends React.Component {
       email: this.state.email,
       hasProfilePic: this.state.hasProfilePic,
       profilePic: this.state.profilePic,
-      username: this.state.username
+      username: this.state.username,
+      likes: [],
+      dislikes: [],
+      comments: []
     });
     this.setState({
       postInput: ""
     });
+  }
+
+  test() {
+    console.log("Start");
+    firebase
+      .firestore()
+      .collection("post")
+      .onSnapshot(querySnapshot => {
+        const markers = [];
+        querySnapshot.forEach(doc => {
+          const {
+            postText,
+            postImage,
+            postId,
+            postDate,
+            postUserId,
+            fullName,
+            hasProfilePic,
+            profilePic,
+            username,
+            likes,
+            dislikes,
+            comments
+          } = doc.data();
+
+          markers.push({
+            key: doc.id,
+            doc,
+            postText,
+            postImage,
+            postId,
+            postDate,
+            postUserId,
+            fullName,
+            hasProfilePic,
+            profilePic,
+            username,
+            likes,
+            dislikes,
+            comments
+          });
+        });
+        console.log(markers);
+        console.log(markers[0].likes);
+        console.log(markers[0].fullName);
+      });
   }
 
   onCollectionUpdate = querySnapshot => {
@@ -184,7 +203,10 @@ export default class HomeScreen extends React.Component {
         fullName,
         hasProfilePic,
         profilePic,
-        username
+        username,
+        likes,
+        dislikes,
+        comments
       } = doc.data();
 
       post.push({
@@ -198,7 +220,10 @@ export default class HomeScreen extends React.Component {
         fullName,
         hasProfilePic,
         profilePic,
-        username
+        username,
+        likes,
+        dislikes,
+        comments
       });
     });
     this.setState({
@@ -238,7 +263,7 @@ export default class HomeScreen extends React.Component {
                 <View style={styles.addPostAreaCard}>
                   <View style={styles.postHeader}>
                     <View style={styles.addPostUserAvatar}>
-                      <TouchableOpacity>
+                      <TouchableOpacity onPress={() => this.test()}>
                         <UserAvatar
                           name={this.state.fullName}
                           size={40}
@@ -269,78 +294,145 @@ export default class HomeScreen extends React.Component {
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
                 <View style={styles.postCard}>
-                  <View style={styles.postBody}>
-                    <View style={styles.postHeader}>
-                      <View style={styles.postAvatar}>
-                        <UserAvatar
-                          name={item.fullName}
-                          size={50}
-                          src={item.profilePic}
-                        />
-                      </View>
-                      <View style={styles.postUserDetail}>
-                        <View style={styles.postUserName}>
-                          <Text style={{ fontSize: 18 }}>{item.fullName}</Text>
-                        </View>
-                        <View style={styles.postUserPostTime}>
-                          <Text style={{ fontSize: 10, color: "grey" }}>
-                            <Moment element={Text} fromNow>
-                              {item.postDate}
-                            </Moment>
-                          </Text>
-                        </View>
-                      </View>
-                      {item.postUserId == currentUser.uid ? (
-                        <View style={styles.postDelete}>
-                          <TouchableOpacity
-                            onPress={() =>
-                              firebase
-                                .firestore()
-                                .collection("post")
-                                .doc(item.key)
-                                .delete()
-                            }
-                          >
-                            <Icon name="md-trash" color="grey" size={18} />
-                          </TouchableOpacity>
-                        </View>
-                      ) : null}
-                    </View>
-                    <View style={styles.postContent}>
-                      <View style={styles.postStatus}>
-                        <Text>{item.postText}</Text>
-                      </View>
-                      {item.postImage == "" ? null : (
-                        <View style={styles.postImage}>
-                          <FastImage
-                            style={{ height: 200, width: Dimensions.width }}
-                            source={{
-                              uri: item.postImage,
-                              priority: FastImage.priority.high
-                            }}
-                            resizeMode={FastImage.resizeMode.cover}
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.props.navigation.navigate("postPage", {
+                        postId: item.key,
+                        postUserId: item.postUserId,
+                        postUserName: item.fullName,
+                        postUserAvatar: item.postUserAvatar,
+                        postDate: item.postDate,
+                        postImage: item.postImage,
+                        postText: item.postText,
+                        currentUser: this.state.currentUser.uid
+                      })
+                    }
+                  >
+                    <View style={styles.postBody}>
+                      <View style={styles.postHeader}>
+                        <View style={styles.postAvatar}>
+                          <UserAvatar
+                            name={item.fullName}
+                            size={50}
+                            src={item.profilePic}
                           />
                         </View>
-                      )}
+                        <View style={styles.postUserDetail}>
+                          <View style={styles.postUserName}>
+                            <Text style={{ fontSize: 18 }}>
+                              {item.fullName}
+                            </Text>
+                          </View>
+                          <View style={styles.postUserPostTime}>
+                            <Text style={{ fontSize: 10, color: "grey" }}>
+                              <Moment element={Text} fromNow>
+                                {item.postDate}
+                              </Moment>
+                            </Text>
+                          </View>
+                        </View>
+                        {item.postUserId == currentUser.uid ? (
+                          <View style={styles.postDelete}>
+                            <TouchableOpacity
+                              onPress={() =>
+                                firebase
+                                  .firestore()
+                                  .collection("post")
+                                  .doc(item.key)
+                                  .delete()
+                              }
+                            >
+                              <Icon name="md-trash" color="grey" size={18} />
+                            </TouchableOpacity>
+                          </View>
+                        ) : null}
+                      </View>
+                      <View style={styles.postContent}>
+                        {item.postText == "" ? null : (
+                          <View style={styles.postStatus}>
+                            <Text>{item.postText}</Text>
+                          </View>
+                        )}
+                        {item.postImage == "" ? null : (
+                          <View style={styles.postImage}>
+                            <FastImage
+                              style={{ height: 200, width: Dimensions.width }}
+                              source={{
+                                uri: item.postImage,
+                                priority: FastImage.priority.high
+                              }}
+                              resizeMode={FastImage.resizeMode.cover}
+                            />
+                          </View>
+                        )}
+                      </View>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                   <View style={styles.postFooter}>
                     <View style={styles.postActivityDetailLikeDislike}>
-                      <Text>0 Likes</Text>
+                      <Text>{item.likes.length} Likes</Text>
 
-                      <Text>0 Dislikes</Text>
+                      <Text>{item.dislikes.length} Dislikes</Text>
                     </View>
 
                     <View style={styles.postActivityDetailComment}>
-                      <Text>0 Comment</Text>
+                      <Text>{item.comments.length} Comment</Text>
                     </View>
                   </View>
 
                   <View style={styles.postControl}>
                     <View style={styles.postActivityControlLikeDislike}>
-                      <Icon name="md-thumbs-up" color="grey" size={25} />
+                      <TouchableOpacity
+                        onPress={() => {
+                          item.dislikes.includes(currentUser.uid)
+                            ? null
+                            : firebase
+                                .firestore()
+                                .collection("post")
+                                .doc(item.key)
+                                .update({
+                                  likes: firebase.firestore.FieldValue.arrayUnion(
+                                    currentUser.uid
+                                  )
+                                });
+                        }}
+                      >
+                        <Icon
+                          name="md-thumbs-up"
+                          color={
+                            item.likes.includes(currentUser.uid)
+                              ? "blue"
+                              : "grey"
+                          }
+                          size={25}
+                        />
+                      </TouchableOpacity>
 
-                      <Icon name="md-thumbs-down" color="grey" size={25} />
+                      <TouchableOpacity
+                        onPress={() => {
+                          item.likes.includes(currentUser.uid)
+                            ? null
+                            : firebase
+                                .firestore()
+                                .collection("post")
+                                .doc(item.key)
+                                .update({
+                                  dislikes: firebase.firestore.FieldValue.arrayUnion(
+                                    currentUser.uid
+                                  )
+                                });
+                        }}
+                      >
+                        <Icon
+                          name="md-thumbs-down"
+                          color={
+                            item.dislikes.includes(currentUser.uid)
+                              ? "red"
+                              : "grey"
+                          }
+                          size={25}
+                        />
+                      </TouchableOpacity>
                     </View>
                     <View style={styles.postActivityControlComment}>
                       <Icon name="md-chatbubbles" color="grey" size={25} />
@@ -357,6 +449,15 @@ export default class HomeScreen extends React.Component {
   }
 }
 
+export default createStackNavigator({
+  Home: {
+    screen: HomeScreen
+  },
+  postPage: {
+    screen: postPage
+  }
+});
+
 const styles = StyleSheet.create({
   container: {
     flex: 1
@@ -364,15 +465,16 @@ const styles = StyleSheet.create({
 
   addPostAreaCard: {
     elevation: 3,
-    backgroundColor: "#FFFFFF"
+    backgroundColor: "#FFFFFF",
+    marginBottom: 5
   },
 
   postCard: {
     elevation: 3,
     backgroundColor: "#FFFFFF",
     flex: 1,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     borderRadius: 3
   },
 
@@ -382,7 +484,8 @@ const styles = StyleSheet.create({
 
   postHeader: {
     flex: 1,
-    flexDirection: "row"
+    flexDirection: "row",
+    marginTop: 5
   },
 
   postAvatar: {

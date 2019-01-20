@@ -30,7 +30,7 @@ export default class AddScreen extends React.Component {
     this.state = {
       postInput: "",
       currentUser: "",
-      avatarSource: "",
+      avatarSource: null,
       pic: "",
       picName: "",
       picType: "",
@@ -154,14 +154,17 @@ export default class AddScreen extends React.Component {
               email: this.state.email,
               hasProfilePic: this.state.hasProfilePic,
               profilePic: this.state.profilePic,
-              username: this.state.username
+              username: this.state.username,
+              likes: [],
+              dislikes: [],
+              comments: []
             });
           });
       })
       .then(() => {
         this.setState({
           postInput: "",
-          avatarSource: ""
+          avatarSource: null
         });
       });
   }
