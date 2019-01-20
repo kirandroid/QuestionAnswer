@@ -216,7 +216,7 @@ export default class AddScreen extends React.Component {
               onChangeText={text => this.updatePostInput(text)}
               style={{ height: 180 }}
               underlineColorAndroid="transparent"
-              placeholder={"What is you're problem man!"}
+              placeholder={"Share your problem!"}
               placeholderTextColor={"#9E9E9E"}
               numberOfLines={10}
               multiline={true}

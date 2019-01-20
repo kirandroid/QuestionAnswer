@@ -4,9 +4,11 @@ import {
   View,
   StyleSheet,
   StatusBar,
-  Button,
+  ScrollView,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  TextInput,
+  FlatList
 } from "react-native";
 import { Provider as PaperProvider, Appbar } from "react-native-paper";
 import FastImage from "react-native-fast-image";
@@ -14,22 +16,69 @@ import UserAvatar from "react-native-user-avatar";
 import Icon from "react-native-vector-icons/Ionicons";
 import Moment from "react-moment";
 import "moment-timezone";
+import firebase from "react-native-firebase";
 
 export default class postPage extends React.Component {
   static navigationOptions = {
     header: null
   };
+  constructor() {
+    super();
+    this.state = {
+      postInput: "",
+      post: [],
+      postId: "",
+      postUserId: "",
+      postUserName: "xx",
+      postUserAvatar: "",
+      postDate: "",
+      postImage: "",
+      postText: "",
+      currentUser: "",
+      currentUserName: "nn",
+      currentUserPic: "",
+      likes: "",
+      dislikes: "",
+      comments: ""
+    };
+  }
+
+  updatePostInput(value) {
+    this.setState({
+      postInput: value
+    });
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this.setState({
+      postId: navigation.getParam("postId", "NO-ID"),
+      postUserId: navigation.getParam("postUserId", "NO-ID"),
+      postUserName: navigation.getParam("postUserName", "NO-ID"),
+      postUserAvatar: navigation.getParam("postUserAvatar", "NO-ID"),
+      postDate: navigation.getParam("postDate", "NO-ID"),
+      postImage: navigation.getParam("postImage", "NO-ID"),
+      postText: navigation.getParam("postText", "NO-ID"),
+      currentUser: navigation.getParam("currentUser", "NO-ID"),
+      currentUserName: navigation.getParam("currentUserName", "NO-ID"),
+      currentUserPic: navigation.getParam("currentUserPic", "NO-ID"),
+      likes: navigation.getParam("likes", "NO-ID"),
+      dislikes: navigation.getParam("dislikes", "NO-ID"),
+      comments: navigation.getParam("comments", "NO-ID")
+    });
+    firebase
+      .firestore()
+      .collection("post")
+      .doc(navigation.getParam("postId", "NO-ID"))
+      .onSnapshot(doc => {
+        this.setState({
+          post: doc.data().comments
+        });
+        console.log(this.state.post);
+      });
+  }
 
   render() {
-    const { navigation } = this.props;
-    const postId = navigation.getParam("postId", "NO-ID");
-    const postUserId = navigation.getParam("postUserId", "NO-ID");
-    const postUserName = navigation.getParam("postUserName", "NO-ID");
-    const postUserAvatar = navigation.getParam("postUserAvatar", "NO-ID");
-    const postDate = navigation.getParam("postDate", "NO-ID");
-    const postImage = navigation.getParam("postImage", "NO-ID");
-    const postText = navigation.getParam("postText", "NO-ID");
-    const currentUser = navigation.getParam("currentUser", "NO-ID");
     return (
       <PaperProvider>
         <StatusBar backgroundColor="#b26a00" barStyle="light-content" />
@@ -39,88 +88,226 @@ export default class postPage extends React.Component {
             title="Post"
           />
         </Appbar.Header>
+
         <View style={styles.container}>
-          <View style={styles.postCard}>
-            <View style={styles.postBody}>
-              <View style={styles.postHeader}>
-                <View style={styles.postAvatar}>
-                  <UserAvatar
-                    name={postUserName}
-                    size={50}
-                    src={postUserAvatar}
-                  />
+          <FlatList
+            data={this.state.post}
+            ListEmptyComponent={
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <Text>Sorry No result this time!</Text>
+              </View>
+            }
+            ListHeaderComponent={
+              <View style={styles.headerContain}>
+                <View style={styles.postCard}>
+                  <View style={styles.postBody}>
+                    <View style={styles.postHeader}>
+                      <View style={styles.postAvatar}>
+                        <UserAvatar
+                          name={this.state.postUserName}
+                          size={50}
+                          src={this.state.postUserAvatar}
+                        />
+                      </View>
+                      <View style={styles.postUserDetail}>
+                        <View style={styles.postUserName}>
+                          <Text style={{ fontSize: 18 }}>
+                            {this.state.postUserName}
+                          </Text>
+                        </View>
+                        <View style={styles.postUserPostTime}>
+                          <Text style={{ fontSize: 10, color: "grey" }}>
+                            <Moment element={Text} fromNow>
+                              {this.state.postDate}
+                            </Moment>
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.postContent}>
+                      {this.state.postText == "" ? null : (
+                        <View style={styles.postStatus}>
+                          <Text>{this.state.postText}</Text>
+                        </View>
+                      )}
+                      {this.state.postImage == "" ? null : (
+                        <View style={styles.postImage}>
+                          <FastImage
+                            style={{ height: 200, width: Dimensions.width }}
+                            source={{
+                              uri: this.state.postImage,
+                              priority: FastImage.priority.high
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                          />
+                        </View>
+                      )}
+                    </View>
+                    <View style={styles.postFooter}>
+                      <View style={styles.postActivityDetailLikeDislike}>
+                        <Text>{this.state.likes.length} Likes</Text>
+
+                        <Text>{this.state.dislikes.length} Dislikes</Text>
+                      </View>
+
+                      <View style={styles.postActivityDetailComment}>
+                        <Text>{this.state.comments} Comment</Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.postControl}>
+                      <View style={styles.postActivityControlLikeDislike}>
+                        <TouchableOpacity>
+                          <Icon
+                            name="md-thumbs-up"
+                            color={
+                              this.state.likes.includes(this.state.currentUser)
+                                ? "blue"
+                                : "grey"
+                            }
+                            size={25}
+                          />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity>
+                          <Icon
+                            name="md-thumbs-down"
+                            color={
+                              this.state.dislikes.includes(
+                                this.state.currentUser
+                              )
+                                ? "red"
+                                : "grey"
+                            }
+                            size={25}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.postActivityControlComment}>
+                        <Icon name="md-chatbubbles" color="grey" size={25} />
+                      </View>
+                    </View>
+
+                    <View style={styles.addPostAreaCard}>
+                      <View style={styles.postHeader}>
+                        <View style={styles.addPostUserAvatar}>
+                          <TouchableOpacity onPress={() => this.test()}>
+                            <UserAvatar
+                              name={this.state.currentUserName}
+                              size={40}
+                              src={this.state.currentUserPic}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                        <View style={styles.addPostUserStatus}>
+                          <TextInput
+                            style={{ height: 80, textAlign: "left" }}
+                            value={this.state.postInput}
+                            onChangeText={text => this.updatePostInput(text)}
+                            underlineColorAndroid="transparent"
+                            placeholder={"What is your problem man!!!"}
+                            placeholderTextColor={"#9E9E9E"}
+                            numberOfLines={10}
+                            multiline={true}
+                          />
+                        </View>
+                        <View style={styles.addPostImage}>
+                          <TouchableOpacity
+                            onPress={() =>
+                              firebase
+                                .firestore()
+                                .collection("post")
+                                .doc(this.state.postId)
+                                .update({
+                                  comments: firebase.firestore.FieldValue.arrayUnion(
+                                    {
+                                      commentText: this.state.postInput,
+                                      commentUID: this.state.currentUser,
+                                      commentUser: this.state.currentUserName,
+                                      commentUserImage: this.state
+                                        .currentUserPic,
+                                      postDate: Date.now()
+                                    }
+                                  )
+                                })
+                                .then(() => {
+                                  this.setState({
+                                    postInput: ""
+                                  });
+                                })
+                            }
+                          >
+                            <Icon name="md-send" color="grey" size={22} />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
                 </View>
-                <View style={styles.postUserDetail}>
-                  <View style={styles.postUserName}>
-                    <Text style={{ fontSize: 18 }}>{postUserName}</Text>
+              </View>
+            }
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View style={styles.postCard}>
+                <TouchableOpacity>
+                  <View style={styles.postBody}>
+                    <View style={styles.postHeader}>
+                      <View style={styles.postAvatar}>
+                        <UserAvatar
+                          name={item.commentUser}
+                          size={50}
+                          src={item.commentUserImage}
+                        />
+                      </View>
+                      <View style={styles.postUserDetail}>
+                        <View style={styles.postUserName}>
+                          <Text style={{ fontSize: 18 }}>
+                            {item.commentUser}
+                          </Text>
+                        </View>
+                        <View style={styles.postUserPostTime}>
+                          <Text style={{ fontSize: 10, color: "grey" }}>
+                            <Moment element={Text} fromNow>
+                              {item.postDate}
+                            </Moment>
+                          </Text>
+                        </View>
+                      </View>
+                      {item.commentUID == this.state.currentUser ? (
+                        <View style={styles.postDelete}>
+                          <TouchableOpacity
+                            onPress={() =>
+                              firebase
+                                .firestore()
+                                .collection("post")
+                                .doc(item.key)
+                                .delete()
+                            }
+                          >
+                            <Icon name="md-trash" color="grey" size={18} />
+                          </TouchableOpacity>
+                        </View>
+                      ) : null}
+                    </View>
+                    <View style={styles.postContent}>
+                      {item.postText == "" ? null : (
+                        <View style={styles.postStatus}>
+                          <Text>{item.commentText}</Text>
+                        </View>
+                      )}
+                    </View>
                   </View>
-                  <View style={styles.postUserPostTime}>
-                    <Text style={{ fontSize: 10, color: "grey" }}>
-                      <Moment element={Text} fromNow>
-                        {postDate}
-                      </Moment>
-                    </Text>
-                  </View>
-                </View>
-                {postUserId == currentUser ? (
-                  <View style={styles.postDelete}>
-                    <TouchableOpacity
-                      onPress={() =>
-                        firebase
-                          .firestore()
-                          .collection("post")
-                          .doc(item.key)
-                          .delete()
-                      }
-                    >
-                      <Icon name="md-trash" color="grey" size={18} />
-                    </TouchableOpacity>
-                  </View>
-                ) : null}
+                </TouchableOpacity>
               </View>
-              <View style={styles.postContent}>
-                {postText == "" ? null : (
-                  <View style={styles.postStatus}>
-                    <Text>{postText}</Text>
-                  </View>
-                )}
-                {postImage == "" ? null : (
-                  <View style={styles.postImage}>
-                    <FastImage
-                      style={{ height: 200, width: Dimensions.width }}
-                      source={{
-                        uri: postImage,
-                        priority: FastImage.priority.high
-                      }}
-                      resizeMode={FastImage.resizeMode.cover}
-                    />
-                  </View>
-                )}
-              </View>
-            </View>
-            <View style={styles.postFooter}>
-              <View style={styles.postActivityDetailLikeDislike}>
-                <Text>0 Likes</Text>
-
-                <Text>0 Dislikes</Text>
-              </View>
-
-              <View style={styles.postActivityDetailComment}>
-                <Text>0 Comment</Text>
-              </View>
-            </View>
-
-            <View style={styles.postControl}>
-              <View style={styles.postActivityControlLikeDislike}>
-                <Icon name="md-thumbs-up" color="grey" size={25} />
-
-                <Icon name="md-thumbs-down" color="grey" size={25} />
-              </View>
-              <View style={styles.postActivityControlComment}>
-                <Icon name="md-chatbubbles" color="grey" size={25} />
-              </View>
-            </View>
-          </View>
+            )}
+            keyExtractor={item => item.key}
+          />
         </View>
       </PaperProvider>
     );
@@ -129,6 +316,9 @@ export default class postPage extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1
+  },
+  headerContain: {
     flex: 1
   },
 
@@ -148,11 +338,11 @@ const styles = StyleSheet.create({
   },
 
   postBody: {
-    flex: 8
+    flex: 9
   },
 
   postHeader: {
-    flex: 3,
+    flex: 1,
     flexDirection: "row",
     marginTop: 5
   },
@@ -185,7 +375,7 @@ const styles = StyleSheet.create({
   },
 
   postContent: {
-    flex: 5
+    flex: 1
   },
 
   postStatus: {

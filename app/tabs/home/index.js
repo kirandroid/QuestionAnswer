@@ -226,6 +226,7 @@ class HomeScreen extends React.Component {
         comments
       });
     });
+    console.log(post);
     this.setState({
       post,
       loading: false
@@ -277,7 +278,7 @@ class HomeScreen extends React.Component {
                         value={this.state.postInput}
                         onChangeText={text => this.updatePostInput(text)}
                         underlineColorAndroid="transparent"
-                        placeholder={"What is your problem man!!!"}
+                        placeholder={"Share your problem."}
                         placeholderTextColor={"#9E9E9E"}
                         numberOfLines={10}
                         multiline={true}
@@ -300,11 +301,16 @@ class HomeScreen extends React.Component {
                         postId: item.key,
                         postUserId: item.postUserId,
                         postUserName: item.fullName,
-                        postUserAvatar: item.postUserAvatar,
+                        postUserAvatar: item.profilePic,
                         postDate: item.postDate,
                         postImage: item.postImage,
                         postText: item.postText,
-                        currentUser: this.state.currentUser.uid
+                        likes: item.likes,
+                        dislikes: item.dislikes,
+                        comments: item.comments.length,
+                        currentUser: this.state.currentUser.uid,
+                        currentUserName: this.state.fullName,
+                        currentUserPic: this.state.profilePic
                       })
                     }
                   >
