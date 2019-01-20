@@ -14,10 +14,14 @@ import {
 import { Provider as PaperProvider, Appbar } from "react-native-paper";
 import firebase from "react-native-firebase";
 import FastImage from "react-native-fast-image";
+import { createStackNavigator } from "react-navigation";
+import editprofile from "./editprofile";
 
-export default class ProfileScreen extends React.Component {
+class ProfileScreen extends React.Component {
+  static navigationOptions = {
+    header: null
+  };
   // state = { currentUser: null };
-
   constructor() {
     super();
     this.state = {
@@ -128,9 +132,7 @@ export default class ProfileScreen extends React.Component {
             <View style={styles.bodyContent}>
               <Text style={styles.name}>{this.state.fullName}</Text>
               <Text style={styles.info}>{this.state.email}</Text>
-              <Text style={styles.description}>
-                Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum
-                electram expetendis, omittam deseruisse consequuntur ius an,
+              <Text style={styles.description}>Add Bio Here....
               </Text>
 
               <TouchableOpacity style={styles.buttonContainer}>
@@ -149,6 +151,9 @@ export default class ProfileScreen extends React.Component {
               >
                 <Text>LogOut</Text>
               </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonContainer} onPress={()=>this.props.navigation.navigate('editprofile')}>
+                <Text>Edit Profile</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -156,7 +161,14 @@ export default class ProfileScreen extends React.Component {
     );
   }
 }
-
+export default createStackNavigator({
+  ProfileScreen: {
+    screen: ProfileScreen
+  },
+  editprofile: {
+    screen: editprofile
+  }
+});
 const styles = StyleSheet.create({
   header: {
     backgroundColor: "#00BFFF",
