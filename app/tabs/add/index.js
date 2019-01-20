@@ -237,12 +237,6 @@ export default class AddScreen extends React.Component {
                 onPress={() => this.choosePhoto()}
               />
             </View>
-            <View style={styles.footerItems}>
-              <Icon name="ios-pricetags" color="grey" size={24} />
-            </View>
-            <View style={styles.footerItems}>
-              <Icon name="ios-person-add" color="grey" size={24} />
-            </View>
             <View style={styles.footerItemRest}>
               <Button title="Post" onPress={() => this.addPost()} />
             </View>
