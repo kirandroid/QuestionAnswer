@@ -150,7 +150,6 @@ android {
 
 dependencies {
     compile project(':react-native-image-picker')
-    compile project(':react-native-device-info')
     compile project(':react-native-fast-image')
     implementation project(':react-native-firebase')
     implementation project(':react-native-gesture-handler')

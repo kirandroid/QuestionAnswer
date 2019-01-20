@@ -77,8 +77,6 @@ import FastImage from "react-native-fast-image";
 import { createStackNavigator } from "react-navigation";
 import firebase from "react-native-firebase";
 
-var DeviceInfo = require("react-native-device-info");
-
 export default class test extends React.Component {
   static navigationOptions = {
     header: null
