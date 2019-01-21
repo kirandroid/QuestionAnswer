@@ -34,7 +34,7 @@ export default class AddScreen extends React.Component {
       pic: "",
       picName: "",
       picType: "",
-      imageUrl: "",
+      imageUrl: null,
       fullName: "xc",
       email: "",
       coverImage: "",
@@ -43,6 +43,12 @@ export default class AddScreen extends React.Component {
       profilePic: "",
       username: ""
     };
+  }
+
+  updatePostInput(value) {
+    this.setState({
+      postInput: value
+    });
   }
 
   asy = async () => {
@@ -71,61 +77,30 @@ export default class AddScreen extends React.Component {
     this.asy();
   }
 
-  updatePostInput(value) {
+  addPostOnlyText() {
+    this.ref.add({
+      postText: this.state.postInput,
+      hasImage: false,
+      active: true,
+      postImage: "",
+      postUserId: this.state.currentUser.uid,
+      postId: "jhgjgkj",
+      postDate: firebase.firestore.FieldValue.serverTimestamp(),
+      fullName: this.state.fullName,
+      email: this.state.email,
+      hasProfilePic: this.state.hasProfilePic,
+      profilePic: this.state.profilePic,
+      username: this.state.username,
+      likes: [],
+      dislikes: [],
+      comments: []
+    });
     this.setState({
-      postInput: value
+      postInput: null
     });
   }
 
   addPost() {
-    // var uploadTask = firebase
-    //   .storage()
-    //   .ref("post/" + this.state.picName)
-    //   .putFile(this.state.pic);
-
-    // uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, snapshot => {
-    //   var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //   console.log("Upload is " + progress + "% done");
-    //   switch (snapshot.state) {
-    //     case firebase.storage.TaskState.PAUSED:
-    //       console.log("Upload is paused");
-    //       break;
-    //     case firebase.storage.TaskState.RUNNING:
-    //       console.log("Upload is running");
-    //       break;
-    //     case firebase.storage.TaskState.SUCCESS:
-    //       console.log("Success");
-    //       firebase
-    //         .storage()
-    //         .refFromURL(
-    //           "gs://questionanswer-3cd3f.appspot.com/post/" + this.state.picName
-    //         )
-    //         .getDownloadURL()
-    //         .then(url => {
-    //           console.log(url);
-    //           this.setState({ imageUrl: url });
-    //         })
-    //         .then(() => {
-    //           this.ref.add({
-    //             postText: this.state.postInput,
-    //             hasImage: true,
-    //             active: true,
-    //             postImage: this.state.imageUrl,
-    //             postUserId: this.state.currentUser.uid,
-    //             postId: "jhgjgkj",
-    //             postDate: firebase.firestore.FieldValue.serverTimestamp()
-    //           });
-    //         })
-    //         .then(() => {
-    //           this.setState({
-    //             avatarSource: null,
-    //             postInput: ""
-    //           });
-    //         });
-    //       break;
-    //   }
-    // });
-
     firebase
       .storage()
       .ref("post/" + this.state.picName)
@@ -159,13 +134,14 @@ export default class AddScreen extends React.Component {
               dislikes: [],
               comments: []
             });
+          })
+          .then(() => {
+            this.setState({
+              postInput: "",
+              avatarSource: null,
+              pic: null
+            });
           });
-      })
-      .then(() => {
-        this.setState({
-          postInput: "",
-          avatarSource: null
-        });
       });
   }
 
@@ -203,7 +179,11 @@ export default class AddScreen extends React.Component {
           <View style={styles.header}>
             <View style={styles.headerUserAvatar}>
               <TouchableOpacity onPress={this.asy}>
-                <UserAvatar name={this.state.fullName} size={60} />
+                <UserAvatar
+                  name={this.state.fullName}
+                  size={60}
+                  src={this.state.profilePic}
+                />
               </TouchableOpacity>
             </View>
             <View style={styles.headerUserName}>
@@ -225,8 +205,15 @@ export default class AddScreen extends React.Component {
           <View style={styles.photoContainer}>
             <Image
               source={this.state.avatarSource}
-              style={{ width: "100%", height: 300, margin: 10 }}
-            />
+              style={{ width: 100, height: 100, margin: 10 }}
+            >
+              <Icon
+                name="ios-camera"
+                color="grey"
+                size={24}
+                onPress={() => this.choosePhoto()}
+              />
+            </Image>
           </View>
           <View style={styles.footer}>
             <View style={styles.footerItems}>
@@ -238,7 +225,14 @@ export default class AddScreen extends React.Component {
               />
             </View>
             <View style={styles.footerItemRest}>
-              <Button title="Post" onPress={() => this.addPost()} />
+              <Button
+                title="Post"
+                onPress={() => {
+                  this.state.avatarSource == null
+                    ? this.addPostOnlyText()
+                    : this.addPost();
+                }}
+              />
             </View>
           </View>
         </View>
@@ -270,11 +264,11 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    flex: 5
+    flex: 4
   },
 
   photoContainer: {
-    flex: 2
+    flex: 3
   },
 
   footer: {

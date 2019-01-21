@@ -16,6 +16,7 @@ import firebase from "react-native-firebase";
 import FastImage from "react-native-fast-image";
 import { createStackNavigator } from "react-navigation";
 import editprofile from "./editprofile";
+import UserAvatar from "react-native-user-avatar";
 
 class ProfileScreen extends React.Component {
   static navigationOptions = {
@@ -64,76 +65,34 @@ class ProfileScreen extends React.Component {
       console.log(error.message);
     }
   };
-
-  // <Text>Hello {currentUser && currentUser.email}</Text>
-  // <Button title="Logout" onPress={() => firebase.auth().signOut()} />
-  //   render() {
-  //     const { currentUser } = this.state;
-  //     return (
-  //       <PaperProvider>
-  //         <StatusBar backgroundColor="#b26a00" barStyle="light-content" />
-  //         <Appbar.Header style={{ backgroundColor: "orange" }}>
-  //           <Appbar.Content
-  //             titleStyle={{ alignSelf: "center", color: "white" }}
-  //             title="Profile"
-  //           />
-  //         </Appbar.Header>
-
-  //         <View style={styles.container}>
-  //           <View style={styles.profileHeader}>
-  //             <View style={styles.profileCover}>
-  //               <FastImage
-  //                 style={{ height: "100%", width: Dimensions.width }}
-  //                 source={{
-  //                   uri:
-  //                     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQYTJwz3vNzCUITCBgEOkcKGW_GUYp4m45R_xdapaK8pSBHWLZ",
-  //                   priority: FastImage.priority.high
-  //                 }}
-  //                 resizeMode={FastImage.resizeMode.cover}
-  //               />
-  //             </View>
-  //             <View style={styles.profileDetail}>
-  //               <Button
-  //                 title="Logout"
-  // onPress={() =>
-  //   firebase
-  //     .auth()
-  //     .signOut()
-  //     .then(() => {
-  //       this.deleteUserId;
-  //     })
-  // }
-  //               />
-
-  //               <Text>{currentUser && currentUser.email}</Text>
-  //             </View>
-  //           </View>
-  //           <View style={styles.profilePost} />
-  //         </View>
-  //       </PaperProvider>
-  //     );
-  //   }
-  // }
-
   render() {
     return (
       <ScrollView>
         <View style={styles.container}>
-          <View style={styles.header} />
-          <FastImage
-            style={styles.avatar}
-            source={{
-              uri: this.state.profilePic,
-              priority: FastImage.priority.high
-            }}
-            resizeMode={FastImage.resizeMode.cover}
-          />
+          <View style={styles.header}>
+            <FastImage
+              style={{ height: 200, width: Dimensions.width }}
+              source={{
+                uri:
+                  "https://images.fatherly.com/wp-content/uploads/2018/08/the-meg-warner-bros-530x303.jpg?q=65&enable=upscale&w=600",
+
+                priority: FastImage.priority.high
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+          </View>
+          <View style={styles.avatar}>
+            <UserAvatar
+              name={this.state.fullName}
+              size={130}
+              src={this.state.profilePic}
+            />
+          </View>
           <View style={styles.body}>
             <View style={styles.bodyContent}>
               <Text style={styles.name}>{this.state.fullName}</Text>
               <Text style={styles.info}>{this.state.email}</Text>
-              <Text style={styles.description}>Add Bio Here....
-              </Text>
+              <Text style={styles.description}>Add Bio Here....</Text>
 
               <TouchableOpacity style={styles.buttonContainer}>
                 <Text>View Questions</Text>
@@ -151,7 +110,10 @@ class ProfileScreen extends React.Component {
               >
                 <Text>LogOut</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonContainer} onPress={()=>this.props.navigation.navigate('editprofile')}>
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={() => this.props.navigation.navigate("editprofile")}
+              >
                 <Text>Edit Profile</Text>
               </TouchableOpacity>
             </View>
@@ -171,25 +133,14 @@ export default createStackNavigator({
 });
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: "#00BFFF",
     height: 200
   },
   avatar: {
-    width: 130,
-    height: 130,
-    borderRadius: 63,
-    borderWidth: 4,
-    borderColor: "white",
     marginBottom: 10,
     alignSelf: "center",
     position: "absolute",
     marginTop: 130
   },
-  // name: {
-  //   fontSize: 22,
-  //   color: "#FFFFFF",
-  //   fontWeight: "600"
-  // },
   body: {
     marginTop: 40
   },
@@ -201,7 +152,6 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 28,
     color: "#696969"
-    // fontWeight: "600"
   },
   info: {
     fontSize: 16,
