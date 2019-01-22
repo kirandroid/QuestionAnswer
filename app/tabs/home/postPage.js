@@ -279,21 +279,6 @@ export default class postPage extends React.Component {
                           </Text>
                         </View>
                       </View>
-                      {item.commentUID == this.state.currentUser ? (
-                        <View style={styles.postDelete}>
-                          <TouchableOpacity
-                            onPress={() =>
-                              firebase
-                                .firestore()
-                                .collection("post")
-                                .doc(item.key)
-                                .delete()
-                            }
-                          >
-                            <Icon name="md-trash" color="grey" size={18} />
-                          </TouchableOpacity>
-                        </View>
-                      ) : null}
                     </View>
                     <View style={styles.postContent}>
                       {item.postText == "" ? null : (

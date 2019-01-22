@@ -1,64 +1,3 @@
-// import React from "react";
-// import { Text, View, StyleSheet, StatusBar, TextInput} from "react-native";
-// import { Provider as PaperProvider, Appbar } from "react-native-paper";
-// // import FastImage from "react-native-fast-image";
-
-// var DeviceInfo = require("react-native-device-info");
-
-// export default class editprofile extends React.Component {
-//   static navigationOptions = {
-//     header: null
-//   };
-//   render() {
-//     return (
-//       <PaperProvider>
-//         <StatusBar backgroundColor="#b26a00" barStyle="light-content" />
-//         <Appbar.Header style={{ backgroundColor: "orange" }}>
-//           <Appbar.Content
-//             titleStyle={{ alignSelf: "center", color: "white" }}
-//             title="editprofile"
-//           />
-//         </Appbar.Header>
-
-//           <View style={style.container}>
-//           <TextInput
-//             style={styles.textInput}
-//             autoCapitalize="none"
-//             placeholder="Email"
-//           />
-//           <Text style={styles.textstyle}>First Name:</Text>
-//           <Text style={styles.textstyle}>last Name</Text>
-//           <Text style={styles.textstyle}>Bio</Text>
-//           <Text style={styles.textstyle}>Address</Text>
-//           </View>
-//       </PaperProvider>
-//     );
-//   }
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center"
-//   },
-//   textstyle:{
-//     color: "#000000",
-//     fontSize: 21,
-//     fontFamily: "Helvetica",
-//     fontWeight: "bold"
-//   },
-//   textInput: {
-//     width: "90%",
-//     height: 44,
-//     borderColor: "gray",
-//     borderWidth: 2,
-//     backgroundColor: "white",
-//     borderRadius: 25,
-//     marginTop: 8
-//   },
-// });
-
 import React from "react";
 import {
   Text,
@@ -72,10 +11,19 @@ import {
   ScrollView,
   Dimensions
 } from "react-native";
-import { Provider as PaperProvider, Appbar } from "react-native-paper";
+import { Provider as PaperProvider, Appbar, Button } from "react-native-paper";
 import FastImage from "react-native-fast-image";
 import { createStackNavigator } from "react-navigation";
 import firebase from "react-native-firebase";
+import Icon from "react-native-vector-icons/Ionicons";
+import UserAvatar from "react-native-user-avatar";
+import ImagePicker from "react-native-image-picker";
+
+const options = {
+  title: "Choose an Image",
+  takePhotoButtonTitle: "Take photo with your camera",
+  chooseFromLibraryButtonTitle: "Choose photo from library"
+};
 
 export default class test extends React.Component {
   static navigationOptions = {
@@ -84,11 +32,48 @@ export default class test extends React.Component {
   constructor() {
     super();
     this.state = {
+      currentUser: "",
       fullName: "kc",
+      hasCover: false,
+      firstNameInput: "",
+      lastNameInput: "",
+      userNameInput: "",
+      bioInput: "",
+      profilePicInput: "",
+      coverImageInput: "",
       profilePic: "",
-      email: "",
-      username: ""
+      profilePicName: "",
+      profilePicType: "",
+      coverPic: "",
+      coverPicName: "",
+      coverPicType: "",
+      profilePicUrl: "",
+      coverImageUrl: "",
+      profilePicUrlCompare: "",
+      coverImageUrlComapare: ""
     };
+  }
+
+  updateFirstNameInput(value) {
+    this.setState({
+      firstNameInput: value
+    });
+  }
+
+  updateLastNameInput(value) {
+    this.setState({
+      lastNameInput: value
+    });
+  }
+  updateUserNameInput(value) {
+    this.setState({
+      userNameInput: value
+    });
+  }
+  updateBioInput(value) {
+    this.setState({
+      bioInput: value
+    });
   }
   asy = async () => {
     console.log("In Display");
@@ -99,9 +84,15 @@ export default class test extends React.Component {
       console.log(parsed.fullName);
       this.setState({
         fullName: parsed.fullName,
-        email: parsed.email,
         profilePic: parsed.profilePic,
-        username: parsed.username
+        userNameInput: parsed.username,
+        hasCover: parsed.hasCover,
+        coverPic: parsed.coverImage,
+        profilePicUrlCompare: parsed.profilePic,
+        coverImageUrlComapare: parsed.coverImage,
+        bioInput: parsed.bio,
+        firstNameInput: parsed.firstName,
+        lastNameInput: parsed.lastName
       });
     } catch (error) {
       console.log(error);
@@ -123,6 +114,42 @@ export default class test extends React.Component {
     }
   };
 
+  chooseCoverPhoto() {
+    ImagePicker.showImagePicker(options, response => {
+      console.log("Response = ", response);
+
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.error) {
+        console.log("Image Picker Error: ", response.error);
+      } else {
+        this.setState({
+          coverPic: response.uri,
+          coverPicName: response.fileName,
+          coverPicType: response.type
+        });
+      }
+    });
+  }
+
+  chooseProfilePhoto() {
+    ImagePicker.showImagePicker(options, response => {
+      console.log("Response = ", response);
+
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.error) {
+        console.log("Image Picker Error: ", response.error);
+      } else {
+        this.setState({
+          profilePic: response.uri,
+          profilePicName: response.fileName,
+          profilePicType: response.type
+        });
+      }
+    });
+  }
+
   render() {
     return (
       <ScrollView>
@@ -134,65 +161,179 @@ export default class test extends React.Component {
               title="Explore"
             />
           </Appbar.Header>
-          <View style={styles.header}>
-            <FastImage
-              style={styles.avatar}
-              source={{
-                uri: this.state.profilePic,
-                priority: FastImage.priority.high
-              }}
-              resizeMode={FastImage.resizeMode.cover}
-            />
-          </View>
-          <View style={styles.compstyle}>
-            <Text style={styles.name}>{this.state.fullName}</Text>
-            <Text style={styles.info}>{this.state.email}</Text>
-          </View>
-          {/* <View style={styles.compstyle}> */}
-          <Text style={styles.textstyle}>First Name</Text>
-          <TextInput
-            style={styles.textInput}
-            autoCapitalize="none"
-            placeholder=""
-          />
-          <Text style={styles.textstyle}>last Name</Text>
-          <TextInput
-            style={styles.textInput}
-            autoCapitalize="none"
-            placeholder=""
-          />
-          <Text style={styles.textstyle}>Address</Text>
-          <TextInput
-            style={styles.textInput}
-            autoCapitalize="none"
-            placeholder=""
-          />
-          <Text style={styles.textstyle}>Bio</Text>
-          <TextInput style={styles.Bio} autoCapitalize="none" placeholder="" />
 
-          <View style={styles.picturecontainer}>
-            <TouchableOpacity style={styles.buttonContainer}>
-              <Text>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonContainer}>
-              <Text>Save</Text>
-            </TouchableOpacity>
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <FastImage
+                style={{ height: 200, width: Dimensions.width }}
+                source={{
+                  uri: this.state.coverPic,
+                  priority: FastImage.priority.high
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+              >
+                <View
+                  style={{
+                    alignItems: "flex-end",
+                    marginHorizontal: 10,
+                    marginVertical: 10
+                  }}
+                >
+                  <Button
+                    icon="add-a-photo"
+                    mode="contained"
+                    onPress={() => this.chooseCoverPhoto()}
+                  >
+                    Change
+                  </Button>
+                </View>
+              </FastImage>
+            </View>
+            <View style={styles.avatar}>
+              <UserAvatar
+                name={this.state.fullName}
+                size={130}
+                src={this.state.profilePic}
+              />
+            </View>
+            <View style={styles.body}>
+              <View style={{ alignItems: "center", marginTop: 25 }}>
+                <Button
+                  icon="add-a-photo"
+                  mode="contained"
+                  onPress={() => this.chooseProfilePhoto()}
+                >
+                  Change
+                </Button>
+              </View>
+              <Text style={styles.textstyle}>First Name</Text>
+              <TextInput
+                style={styles.textInput}
+                autoCapitalize="none"
+                placeholder=""
+                onChangeText={text => this.updateFirstNameInput(text)}
+              />
+              <Text style={styles.textstyle}>last Name</Text>
+              <TextInput
+                style={styles.textInput}
+                autoCapitalize="none"
+                placeholder=""
+                onChangeText={text => this.updateLastNameInput(text)}
+              />
+              <Text style={styles.textstyle}>UserName</Text>
+              <TextInput
+                style={styles.textInput}
+                autoCapitalize="none"
+                placeholder=""
+                onChangeText={text => this.updateUserNameInput(text)}
+              />
+              <Text style={styles.textstyle}>Bio</Text>
+              <TextInput
+                style={styles.Bio}
+                autoCapitalize="none"
+                placeholder=""
+                onChangeText={text => this.updateBioInput(text)}
+              />
+
+              <View style={styles.picturecontainer}>
+                <TouchableOpacity style={styles.buttonContainer}>
+                  <Text>Clear</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.buttonContainer}
+                  onPress={() => {
+                    if (
+                      this.state.profilePic ==
+                        this.state.profilePicUrlCompare &&
+                      this.state.coverPic == this.state.coverImageUrlComapare
+                    ) {
+                      firebase
+                        .firestore()
+                        .collection("user")
+                        .doc(this.state.currentUser.uid)
+                        .update({
+                          firstName: this.state.firstNameInput,
+                          lastName: this.state.lastNameInput,
+                          username: this.state.userNameInput,
+                          Bio: this.state.bioInput
+                        });
+                    } else {
+                      firebase
+                        .storage()
+                        .ref("user/" + this.state.coverPicName)
+                        .putFile(this.state.coverPic)
+                        .then(() => {
+                          firebase
+                            .storage()
+                            .refFromURL(
+                              "gs://questionanswer-3cd3f.appspot.com/user/" +
+                                this.state.coverPicName
+                            )
+                            .getDownloadURL()
+                            .then(url => {
+                              console.log(url);
+                              this.setState({ coverImageUrl: url });
+                            });
+                        })
+                        .then(() => {
+                          firebase
+                            .storage()
+                            .ref("user/" + this.state.profilePicName)
+                            .putFile(this.state.profilePic)
+                            .then(() => {
+                              firebase
+                                .storage()
+                                .refFromURL(
+                                  "gs://questionanswer-3cd3f.appspot.com/user/" +
+                                    this.state.profilePicName
+                                )
+                                .getDownloadURL()
+                                .then(url => {
+                                  console.log(url);
+                                  this.setState({ profilePicUrl: url });
+                                })
+                                .then(() => {
+                                  firebase
+                                    .firestore()
+                                    .collection("user")
+                                    .doc(this.state.currentUser.uid)
+                                    .update({
+                                      firstName: this.state.firstNameInput,
+                                      lastName: this.state.lastNameInput,
+                                      username: this.state.userNameInput,
+                                      Bio: this.state.bioInput,
+                                      profilePic: this.state.profilePicUrl,
+                                      coverImage: this.state.coverImageUrl
+                                    });
+                                });
+                            });
+                        });
+                    }
+                  }}
+                >
+                  <Text>Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-          {/* /</View> */}
         </PaperProvider>
       </ScrollView>
     );
   }
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  },
   header: {
-    backgroundColor: "orange",
     height: 200
+  },
+  avatar: {
+    marginBottom: 10,
+    alignSelf: "center",
+    position: "absolute",
+    marginTop: 130
+  },
+
+  body: {
+    marginTop: 40
   },
   compstyle: {
     flex: 1,
@@ -204,7 +345,8 @@ const styles = StyleSheet.create({
     color: "#000000",
     fontSize: 20,
     fontFamily: "Helvetica",
-    fontWeight: "normal"
+    fontWeight: "normal",
+    marginHorizontal: 5
   },
   textInput: {
     width: Dimensions.width,
@@ -231,19 +373,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly"
   },
-  avatar: {
-    width: 130,
-    height: 130,
-    borderRadius: 63,
-    borderWidth: 4,
-    borderColor: "white",
-    marginBottom: 10,
-    alignSelf: "center",
-    position: "absolute",
-    marginTop: 130
-  },
   buttonContainer: {
-    marginTop: 130,
+    marginTop: 20,
     height: 45,
     flexDirection: "row",
     justifyContent: "center",

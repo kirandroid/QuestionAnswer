@@ -15,6 +15,7 @@ import UserAvatar from "react-native-user-avatar";
 import Icon from "react-native-vector-icons/Ionicons";
 import firebase from "react-native-firebase";
 import ImagePicker from "react-native-image-picker";
+import FastImage from "react-native-fast-image";
 
 const options = {
   title: "Choose an Image",
@@ -203,17 +204,14 @@ export default class AddScreen extends React.Component {
             />
           </View>
           <View style={styles.photoContainer}>
-            <Image
-              source={this.state.avatarSource}
+            <FastImage
               style={{ width: 100, height: 100, margin: 10 }}
-            >
-              <Icon
-                name="ios-camera"
-                color="grey"
-                size={24}
-                onPress={() => this.choosePhoto()}
-              />
-            </Image>
+              source={{
+                uri: this.state.pic,
+                priority: FastImage.priority.high
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
           </View>
           <View style={styles.footer}>
             <View style={styles.footerItems}>

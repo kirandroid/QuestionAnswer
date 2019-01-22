@@ -75,7 +75,8 @@ class HomeScreen extends React.Component {
           hasCover,
           hasProfilePic,
           profilePic,
-          username
+          username,
+          Bio
         } = doc.data();
 
         userData.push({
@@ -86,7 +87,8 @@ class HomeScreen extends React.Component {
           hasCover,
           hasProfilePic,
           profilePic,
-          username
+          username,
+          Bio
         });
       })
       .then(() => {
@@ -97,7 +99,10 @@ class HomeScreen extends React.Component {
           hasCover: userData[0].hasCover,
           hasProfilePic: userData[0].hasProfilePic,
           profilePic: userData[0].profilePic,
-          username: userData[0].username
+          username: userData[0].username,
+          firstName: userData[0].firstName,
+          lastName: userData[0].lastName,
+          bio: userData[0].Bio
         };
         AsyncStorage.setItem("user", JSON.stringify(obj));
         console.log("In Save");

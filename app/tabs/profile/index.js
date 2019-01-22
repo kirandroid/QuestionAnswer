@@ -28,8 +28,10 @@ class ProfileScreen extends React.Component {
     this.state = {
       fullName: "kc",
       profilePic: "",
-      email: "",
-      username: ""
+      username: "",
+      coverImage: "",
+      hasCover: false,
+      Bio: ""
     };
   }
 
@@ -55,6 +57,32 @@ class ProfileScreen extends React.Component {
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
     this.asy();
+
+    firebase
+      .firestore()
+      .collection("user")
+      .doc(currentUser.uid)
+      .onSnapshot(doc => {
+        const {
+          firstName,
+          lastName,
+          email,
+          coverImage,
+          hasCover,
+          hasProfilePic,
+          profilePic,
+          username,
+          Bio
+        } = doc.data();
+        this.setState({
+          fullName: firstName + " " + lastName,
+          profilePic: profilePic,
+          username: username,
+          coverImage: coverImage,
+          hasCover: hasCover,
+          Bio: Bio
+        });
+      });
   }
 
   deleteUserId = async () => {
@@ -73,9 +101,7 @@ class ProfileScreen extends React.Component {
             <FastImage
               style={{ height: 200, width: Dimensions.width }}
               source={{
-                uri:
-                  "https://images.fatherly.com/wp-content/uploads/2018/08/the-meg-warner-bros-530x303.jpg?q=65&enable=upscale&w=600",
-
+                uri: this.state.coverImage,
                 priority: FastImage.priority.high
               }}
               resizeMode={FastImage.resizeMode.cover}
@@ -91,12 +117,9 @@ class ProfileScreen extends React.Component {
           <View style={styles.body}>
             <View style={styles.bodyContent}>
               <Text style={styles.name}>{this.state.fullName}</Text>
-              <Text style={styles.info}>{this.state.email}</Text>
-              <Text style={styles.description}>Add Bio Here....</Text>
+              <Text style={styles.info}>@{this.state.username}</Text>
+              <Text style={styles.description}>{this.state.Bio}</Text>
 
-              <TouchableOpacity style={styles.buttonContainer}>
-                <Text>View Questions</Text>
-              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonContainer}
                 onPress={() =>
