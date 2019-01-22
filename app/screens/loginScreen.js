@@ -34,7 +34,7 @@ export default class loginScreen extends React.Component {
               width: Dimensions.width,
               height: 210
             }}
-            source={require("../../Resource/Design/login.png")}
+            source={require("../assets/login.png")}
           />
         </View>
         <View style={styles.container}>
