@@ -208,6 +208,7 @@ export default class test extends React.Component {
               </View>
               <Text style={styles.textstyle}>First Name</Text>
               <TextInput
+                value={this.state.firstNameInput}
                 style={styles.textInput}
                 autoCapitalize="none"
                 placeholder=""
@@ -215,6 +216,7 @@ export default class test extends React.Component {
               />
               <Text style={styles.textstyle}>last Name</Text>
               <TextInput
+                value={this.state.lastNameInput}
                 style={styles.textInput}
                 autoCapitalize="none"
                 placeholder=""
@@ -222,6 +224,7 @@ export default class test extends React.Component {
               />
               <Text style={styles.textstyle}>UserName</Text>
               <TextInput
+                value={this.state.userNameInput}
                 style={styles.textInput}
                 autoCapitalize="none"
                 placeholder=""
@@ -229,6 +232,7 @@ export default class test extends React.Component {
               />
               <Text style={styles.textstyle}>Bio</Text>
               <TextInput
+                value={this.state.bioInput}
                 style={styles.Bio}
                 autoCapitalize="none"
                 placeholder=""
@@ -236,7 +240,17 @@ export default class test extends React.Component {
               />
 
               <View style={styles.picturecontainer}>
-                <TouchableOpacity style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.buttonContainer}
+                  onPress={() => {
+                    this.setState({
+                      firstNameInput: "",
+                      lastNameInput: "",
+                      userNameInput: "",
+                      bioInput: ""
+                    });
+                  }}
+                >
                   <Text>Clear</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -256,6 +270,14 @@ export default class test extends React.Component {
                           lastName: this.state.lastNameInput,
                           username: this.state.userNameInput,
                           Bio: this.state.bioInput
+                        })
+                        .then(() => {
+                          this.setState({
+                            firstNameInput: "",
+                            lastNameInput: "",
+                            userNameInput: "",
+                            bioInput: ""
+                          });
                         });
                     } else {
                       firebase
@@ -307,6 +329,14 @@ export default class test extends React.Component {
                                     });
                                 });
                             });
+                        })
+                        .then(() => {
+                          this.setState({
+                            firstNameInput: "",
+                            lastNameInput: "",
+                            userNameInput: "",
+                            bioInput: ""
+                          });
                         });
                     }
                   }}
