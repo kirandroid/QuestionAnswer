@@ -1,10 +1,19 @@
-# QuestionAnswer
+# QuestionAnswer App
 
-## To Build the project run "build.sh" 
-## Command --> ./build.sh
+College project on mobile Application.
 
-## If you have already build, then execute "run.sh"
-## Command --> ./run.sh
+## User Flow Screens
 
-## If you get error of porn in use, then execute "stop.sh"
-## Command --> ./stop.sh
+<img src="Screenshot/login.png"> <img src="screenshots/activity.png"> <img src="screenshots/activity2.png"> <img  src="screenshots/profile.png">
+
+## Packages:
+
+1. <a href="https://www.npmjs.com/package/react-navigation" target="_blank">react-navigation</a>
+2. <a href="https://www.npmjs.com/package/react-native-fast-image" target="_blank">react-native-fast-image</a>
+3. <a href="https://www.npmjs.com/package/react-native-firebase" target="_blank">react-native-firebase</a>
+4. <a href="https://www.npmjs.com/package/react-native-gifted-chat" target="_blank">react-native-gifted-chat</a>
+5. <a href="https://www.npmjs.com/package/react-moment" target="_blank">react-moment</a>
+6. <a href="https://www.npmjs.com/package/react-native-image-picker" target="_blank">react-native-image-picker</a>
+7. <a href="https://www.npmjs.com/package/react-native-paper" target="_blank">react-native-paper</a>
+8. <a href="https://www.npmjs.com/package/react-native-user-avatar" target="_blank">react-native-user-avatar</a>
+9. <a href="https://www.npmjs.com/package/react-native-vector-icons" target="_blank">react-native-vector-icons</a>
