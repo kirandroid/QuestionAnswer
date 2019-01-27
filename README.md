@@ -4,7 +4,7 @@ College project on mobile Application.
 
 ## User Flow Screens
 
-<img src="Screenshot/login.png"> <img src="screenshots/activity.png"> <img src="screenshots/activity2.png"> <img  src="screenshots/profile.png">
+<img src="Screenshot/login.png"> <img src="Screenshot/activity.png"> <img src="Screenshot/activity2.png"> <img  src="Screenshot/profile.png">
 
 ## Packages:
 
